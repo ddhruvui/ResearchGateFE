@@ -1,7 +1,7 @@
 # Render Blueprint (https://render.com/docs/blueprint-spec).
 # New -> Blueprint -> pick this repo, or create a Static Site by hand with the
 # same three settings: build `npm ci && npm run build`, publish `dist`, and the
-# VITE_API_BASE environment variable set to the Vercel API URL.
+# VITE_API_BASE environment variable below.
 services:
   - type: web
     name: researchgate-ui
@@ -11,7 +11,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE
-        sync: false          # e.g. https://research-gate-be.vercel.app  (no trailing slash)
+        value: https://research-gate-be.vercel.app   # the ResearchGateBE deployment, no trailing slash
     routes:
       - type: rewrite        # SPA: every path serves index.html
         source: /*

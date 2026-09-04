@@ -19,7 +19,7 @@ proxy elsewhere with `VITE_PROXY_TARGET=https://<api-host> npm run dev`.
 ## Build
 
 ```sh
-VITE_API_BASE=https://<your-vercel-project>.vercel.app npm run build
+VITE_API_BASE=https://research-gate-be.vercel.app npm run build
 npm run preview      # serve dist/ locally
 ```
 
@@ -28,14 +28,15 @@ runs (Render). No trailing slash.
 
 ## Deploy on Render
 
-Either **New → Blueprint** and pick this repo (`render.yaml` describes the
-site), or **New → Static Site** by hand:
+The API is deployed at `https://research-gate-be.vercel.app`. Either **New → Blueprint** and
+pick this repo (`render.yaml` describes the site, API URL included), or
+**New → Static Site** by hand:
 
 | Setting | Value |
 |---|---|
 | Build command | `npm ci && npm run build` |
 | Publish directory | `dist` |
-| Environment variable | `VITE_API_BASE` = the Vercel API URL |
+| Environment variable | `VITE_API_BASE` = `https://research-gate-be.vercel.app` |
 | Redirect/rewrite | `/*` → `/index.html` (rewrite) |
 
 Every push to `main` redeploys. Changing `VITE_API_BASE` needs a redeploy.
