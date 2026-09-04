@@ -4,7 +4,7 @@
 # VITE_API_BASE environment variable below.
 services:
   - type: web
-    name: researchgate-ui
+    name: researchgatefe
     runtime: static
     branch: main
     buildCommand: npm ci && npm run build

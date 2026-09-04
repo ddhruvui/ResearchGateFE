@@ -28,7 +28,8 @@ runs (Render). No trailing slash.
 
 ## Deploy on Render
 
-The API is deployed at `https://research-gate-be.vercel.app`. Either **New → Blueprint** and
+Live at `https://researchgatefe.onrender.com`, over the API at
+`https://research-gate-be.vercel.app`. Either **New → Blueprint** and
 pick this repo (`render.yaml` describes the site, API URL included), or
 **New → Static Site** by hand:
 
