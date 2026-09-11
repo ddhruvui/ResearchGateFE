@@ -21,7 +21,7 @@ const REASON = {
 export default function StopLoss ({ data }) {
   const stops = (data.stops || []).map(s => s.toFixed(2))
   const [sel, setSel] = useState(stops[1] || stops[0])
-  const [sort, setSort] = useState({ key: 'end', dir: 'desc' })
+  const [sort, setSort] = useState({ key: `end_${stops[1] || stops[0]}`, dir: 'desc' })
   const [q, setQ] = useState('')
   const [open, setOpen] = useState(null)
   const [detail, setDetail] = useState({})
@@ -49,20 +49,40 @@ export default function StopLoss ({ data }) {
           nStopped: b.nStopped ?? 0,
           maxDrawdown: b.maxDrawdown ?? 0,
           last: b.last || null,
+          // Date first so a ticker whose history stops early still sorts out,
+          // then the outcome — which is the part that actually varies, since a
+          // normal run leaves every stock on the same session.
+          lastDate: `${b.last?.date ? String(b.last.date).slice(0, 10) : ''} ${b.last?.exit_reason || ''}`,
           lastPct: b.last?.traded ? b.last.pct_change : null,
           pending: r.pending || null,
           ends: Object.fromEntries(stops.map(s => [s, r.byStop?.[s]?.end ?? null])),
+          // One flat key per stop level so each balance column sorts on its own
+          // numbers rather than on whichever level happens to be selected.
+          ...Object.fromEntries(stops.map(s => [`end_${s}`, r.byStop?.[s]?.end ?? null])),
         }
       })
     const { key, dir } = sort
-    return out.sort((a, b) => (dir === 'asc' ? 1 : -1) *
-      (typeof a[key] === 'string' ? a[key].localeCompare(b[key]) : (a[key] ?? 0) - (b[key] ?? 0)))
+    const sign = dir === 'asc' ? 1 : -1
+    return out.sort((a, b) => {
+      const x = a[key], y = b[key]
+      // A stock with no value for this column sinks to the bottom either way,
+      // rather than sorting as if it were zero.
+      if (x == null && y == null) return a.ticker.localeCompare(b.ticker)
+      if (x == null) return 1
+      if (y == null) return -1
+      if (typeof x === 'string') return sign * x.localeCompare(y)
+      return sign * (x - y)
+    })
   }, [data.rows, sel, sort, q, stops])
 
   const roll = data.rollup?.byStop?.[sel]
   const start = data.startCapital ?? 10000
-  const th = (key, label, title) => (
-    <th title={title || 'Click to sort'}
+  const th = (key, label, title, stop) => (
+    <th key={key} title={title || 'Click to sort'}
+        aria-sort={sort.key === key ? (sort.dir === 'desc' ? 'descending' : 'ascending') : 'none'}
+        style={stop && sel === stop
+          ? { color: 'var(--text-primary)', fontWeight: 640 }
+          : undefined}
         onClick={() => setSort(s => ({ key, dir: s.key === key && s.dir === 'desc' ? 'asc' : 'desc' }))}>
       {label}{sort.key === key ? (sort.dir === 'desc' ? ' ↓' : ' ↑') : ''}
     </th>
@@ -108,22 +128,19 @@ export default function StopLoss ({ data }) {
           <thead>
             <tr>
               {th('ticker', 'Stock')}
-              <th title="The most recent session this stock traded, and how it ended">Last session</th>
-              {th('lastPct', 'That day', 'How the most recent traded session went')}
-              {stops.map(s => (
-                <th key={s} onClick={() => setSel(s)}
-                    style={{
-                      cursor: 'pointer',
-                      color: sel === s ? 'var(--text-primary)' : undefined,
-                      fontWeight: sel === s ? 640 : undefined,
-                    }}
-                    title={`What $${start.toLocaleString()} became with a ${(Number(s) * 100).toFixed(0)}% stop`}>
+              {th('lastDate', 'Last session', 'Sort by date, then group by how the session ended')}
+              {th('lastPct', 'That day', 'How the most recent traded session went, at the selected stop')}
+              {stops.map(s => th(
+                `end_${s}`,
+                <>
                   <span style={{
                     display: 'inline-block', width: 8, height: 8, borderRadius: 2,
                     background: TOKEN[s], marginRight: 6, verticalAlign: 'middle',
                   }} />
                   {(Number(s) * 100).toFixed(0)}% stop
-                </th>
+                </>,
+                `What $${start.toLocaleString()} became with a ${(Number(s) * 100).toFixed(0)}% stop — click to sort by it`,
+                s,
               ))}
               {th('maxDrawdown', 'Worst dip', 'Largest fall from a peak balance, at the selected stop')}
             </tr>
