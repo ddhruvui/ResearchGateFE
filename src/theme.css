@@ -14,6 +14,16 @@
 
   --series-1: #2a78d6;   /* model            */
   --series-2: #eb6834;   /* buy & hold       */
+
+  /* ORDINAL ramp for the 2/5/8% stop levels — one hue, monotone lightness, so
+     the reader sees the ordering in the colour. Not categorical: swapping 2%
+     and 8% would change the meaning. Adjacent-pair CVD ΔE 17.3 / normal-vision
+     18.1, both PASS. The faint end sits at 2.2:1 on the surface, which is the
+     documented ordinal allowance (light end ≥ 2:1) and is relieved twice over:
+     every line is direct-labelled and the same numbers appear in the table. */
+  --stop-1: #7fb0e8;     /* 2% — tightest    */
+  --stop-2: #2a78d6;     /* 5%               */
+  --stop-3: #17457c;     /* 8% — loosest     */
   --pos: #2a78d6;        /* diverging + pole */
   --neg: #e34948;        /* diverging - pole */
   --mid: #f0efec;        /* diverging midpoint (neutral) */
@@ -36,6 +46,11 @@
     --border: rgba(255, 255, 255, 0.10);
     --series-1: #3987e5;
     --series-2: #d95926;
+    /* Anchor flips in dark: the loosest stop is the BRIGHTEST ink, so the ramp
+       still reads low→high. ΔE 17.1 / 17.6, both PASS on #1a1a19. */
+    --stop-1: #27588f;
+    --stop-2: #3987e5;
+    --stop-3: #a8cdf5;
     --pos: #3987e5;
     --neg: #e66767;
     --mid: #383835;
@@ -55,6 +70,9 @@
   --border: rgba(255, 255, 255, 0.10);
   --series-1: #3987e5;
   --series-2: #d95926;
+  --stop-1: #27588f;
+  --stop-2: #3987e5;
+  --stop-3: #a8cdf5;
   --pos: #3987e5;
   --neg: #e66767;
   --mid: #383835;

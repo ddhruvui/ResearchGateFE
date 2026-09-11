@@ -5,6 +5,7 @@ import EquityChart from './components/EquityChart.jsx'
 import YearEdgeChart from './components/YearEdgeChart.jsx'
 import TickerTable from './components/TickerTable.jsx'
 import NextSession from './components/NextSession.jsx'
+import StopLoss from './components/StopLoss.jsx'
 
 const COSTS = [0, 1, 5, 10]
 const STALE_AFTER_DAYS = 5          // a daily run that skips a long weekend is still fine
@@ -16,12 +17,16 @@ export default function App () {
   const [next, setNext] = useState(null)
   const [costBps, setCostBps] = useState(0)
   const [equity, setEquity] = useState(null)
+  const [strategy, setStrategy] = useState(null)
   const [err, setErr] = useState(null)
 
   useEffect(() => {
     Promise.all([j('/api/summary'), j('/api/tickers'), j('/api/next-session')])
       .then(([s, t, n]) => { setSummary(s); setTickers(t); setNext(n) })
       .catch(e => setErr(e.message))
+    // Optional: a run published before src.strategy existed has no stop-loss
+    // data. That is not a dashboard failure, so it never reaches setErr.
+    j('/api/strategy').then(setStrategy).catch(() => setStrategy(null))
   }, [])
 
   useEffect(() => {
@@ -192,6 +197,22 @@ export default function App () {
           The equity curve above says the same thing in money.
         </p>
       </div>
+
+      {strategy?.rows?.length > 0 && (
+        <div className="card">
+          <h2>$10,000 in each stock, with a stop loss</h2>
+          <p className="note">
+            A second, harder question than direction: follow every call with real money and a
+            stop loss, and where do you end up? Each morning you take the position the model
+            asked for <strong>at the opening price</strong>, and you are out again by the closing
+            bell — whichever comes first of the model&rsquo;s target price, your stop loss, or the
+            close. When a day touches both the target and the stop, daily bars cannot say which
+            came first, so the <strong>stop</strong> is taken; that keeps the tight stops honest
+            rather than flattered.
+          </p>
+          <StopLoss data={strategy} />
+        </div>
+      )}
     </div>
   )
 }
