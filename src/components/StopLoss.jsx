@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import TickerLink from './TickerLink.jsx'
 import { j } from '../api.js'
 import StatTile from './StatTile.jsx'
 import StopLossChart from './StopLossChart.jsx'
@@ -175,7 +176,7 @@ function Row ({ r, sel, stops, start, open, detail, onToggle }) {
       <tr onClick={onToggle} style={{ cursor: 'pointer' }}>
         <td style={{ fontWeight: 560 }}>
           <span style={{ color: 'var(--text-muted)', marginRight: 6 }}>{open ? '▾' : '▸'}</span>
-          {r.ticker}
+          <TickerLink ticker={r.ticker} />
         </td>
         <td style={{ color: 'var(--text-secondary)' }}>
           {L ? `${L.date?.slice(0, 10)} · ${L.direction} · ${REASON[L.exit_reason] || L.exit_reason}` : '—'}

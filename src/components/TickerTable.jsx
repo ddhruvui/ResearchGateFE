@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import TickerLink from './TickerLink.jsx'
 
 /** The table view — 100 names is past every chart's series ceiling, and a table
  *  also satisfies the accessibility requirement that identity never depends on
@@ -59,7 +60,7 @@ export default function TickerTable ({ rows }) {
           <tbody>
             {view.map(r => (
               <tr key={r.ticker}>
-                <td style={{ fontWeight: 560 }}>{r.ticker}</td>
+                <td style={{ fontWeight: 560 }}><TickerLink ticker={r.ticker} /></td>
                 <td>{r.n.toLocaleString()}</td>
                 <td>{(r.accuracy * 100).toFixed(2)}%</td>
                 <td>{(r.baseline * 100).toFixed(2)}%</td>
