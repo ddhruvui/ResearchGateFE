@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { API_BASE, j } from './api.js'
+import { API_BASE, j, withDb } from './api.js'
 import StatTile from './components/StatTile.jsx'
 import EquityChart from './components/EquityChart.jsx'
 import YearEdgeChart from './components/YearEdgeChart.jsx'
@@ -11,7 +11,32 @@ const COSTS = [0, 1, 5, 10]
 const STALE_AFTER_DAYS = 5          // a daily run that skips a long weekend is still fine
 const pct = v => `${(v * 100).toFixed(2)}%`
 
+/**
+ * The midrun switch. Off (the default, on every load): the ResearchGate database, as
+ * always. On: every panel reads the ResearchGateEOD database instead, and
+ * "Tomorrow's prediction" shows its midrun — the guess made as if IB's price at the
+ * time of the midrun were today's close.
+ */
+function MidrunToggle ({ on, onChange }) {
+  return (
+    <div className="topbar">
+      <button type="button" role="switch" aria-checked={on} className="switch"
+              onClick={() => onChange(!on)}
+              title="Show ResearchGateEOD's results and its intraday (midrun) prediction">
+        <span className="knob" aria-hidden="true" />
+        Midrun
+      </button>
+      <span className="topbar-note">
+        {on ? <>Showing <code>ResearchGateEOD</code> · tomorrow&rsquo;s prediction from today&rsquo;s IB price</>
+            : <>Showing <code>ResearchGate</code></>}
+      </span>
+    </div>
+  )
+}
+
 export default function App () {
+  const [midrun, setMidrun] = useState(false)
+  const db = midrun ? 'eod' : 'rg'
   const [summary, setSummary] = useState(null)
   const [tickers, setTickers] = useState([])
   const [next, setNext] = useState(null)
@@ -21,22 +46,36 @@ export default function App () {
   const [err, setErr] = useState(null)
 
   useEffect(() => {
-    Promise.all([j('/api/summary'), j('/api/tickers'), j('/api/next-session')])
-      .then(([s, t, n]) => { setSummary(s); setTickers(t); setNext(n) })
-      .catch(e => setErr(e.message))
+    let live = true
+    setSummary(null); setTickers([]); setNext(null); setStrategy(null); setErr(null)
+    Promise.all([j(withDb('/api/summary', db)), j(withDb('/api/tickers', db))])
+      .then(([s, t]) => { if (live) { setSummary(s); setTickers(t) } })
+      .catch(e => live && setErr(e.message))
+    // With the toggle on, "Tomorrow's prediction" is the midrun. None published yet is
+    // a note in that panel, not a dashboard failure.
+    ;(midrun ? j('/api/midrun') : j('/api/next-session'))
+      .then(n => live && setNext(n))
+      .catch(e => live && setNext({ rows: [], error: e.message }))
     // Optional: a run published before src.strategy existed has no stop-loss
     // data. That is not a dashboard failure, so it never reaches setErr.
-    j('/api/strategy').then(setStrategy).catch(() => setStrategy(null))
-  }, [])
+    j(withDb('/api/strategy', db)).then(d => live && setStrategy(d)).catch(() => live && setStrategy(null))
+    return () => { live = false }
+  }, [db, midrun])
 
   useEffect(() => {
+    let live = true
     setEquity(null)
-    j(`/api/equity?costBps=${costBps}`).then(setEquity).catch(e => setErr(e.message))
-  }, [costBps])
+    j(withDb(`/api/equity?costBps=${costBps}`, db))
+      .then(d => live && setEquity(d)).catch(e => live && setErr(e.message))
+    return () => { live = false }
+  }, [costBps, db])
+
+  const toggle = <MidrunToggle on={midrun} onChange={setMidrun} />
 
   if (err) {
     return (
       <div className="wrap">
+        {toggle}
         <h1>Dashboard</h1>
         <div className="card" style={{ borderColor: 'var(--critical)', background: 'transparent' }}>
           <h2 style={{ color: 'var(--critical)' }}>The API did not answer</h2>
@@ -50,7 +89,7 @@ export default function App () {
       </div>
     )
   }
-  if (!summary) return <div className="wrap"><p className="sub">Loading…</p></div>
+  if (!summary) return <div className="wrap">{toggle}<p className="sub">Loading…</p></div>
 
   const o = summary.overall
   const st = equity?.stats
@@ -62,6 +101,7 @@ export default function App () {
 
   return (
     <div className="wrap">
+      {toggle}
       {stale && (
         <div className="card" style={{
           borderColor: 'var(--critical)', background: 'transparent', marginBottom: 18,
@@ -177,9 +217,18 @@ export default function App () {
       )}
 
       <div className="card">
-        <h2>Tomorrow&rsquo;s prediction</h2>
-        <p className="note">Live paper trade — no answer exists yet. It gets graded on the next run.</p>
-        <NextSession data={next} />
+        <h2>Tomorrow&rsquo;s prediction{midrun && ' — midrun'}</h2>
+        {midrun ? (
+          <p className="note">
+            Made during the day, as if IB&rsquo;s price
+            {next?.midrunAsOf && <> at <strong>{new Date(next.midrunAsOf).toLocaleString()}</strong></>}
+            {' '}were today&rsquo;s close — the official model, fed today&rsquo;s partial bar. Not graded:
+            tonight&rsquo;s run makes the official prediction from the real close.
+          </p>
+        ) : (
+          <p className="note">Live paper trade — no answer exists yet. It gets graded on the next run.</p>
+        )}
+        <NextSession data={next} midrun={midrun} />
       </div>
 
       <div className="card">
@@ -210,7 +259,7 @@ export default function App () {
             came first, so the <strong>stop</strong> is taken; that keeps the tight stops honest
             rather than flattered.
           </p>
-          <StopLoss data={strategy} />
+          <StopLoss key={db} data={strategy} db={db} />
         </div>
       )}
     </div>

@@ -14,7 +14,7 @@ import TickerLink from './TickerLink.jsx'
  * only once asked for, and every press re-fetches rather than reusing what is
  * already on screen.
  */
-export default function NextSession ({ data }) {
+export default function NextSession ({ data, midrun = false }) {
   const [sort, setSort] = useState({ key: 'pred', dir: 'desc' })
   const [q, setQ] = useState('')
   const [dir, setDir] = useState('all')
@@ -60,6 +60,12 @@ export default function NextSession ({ data }) {
   }, [rows, q, dir, sort, live])
 
   if (!rows.length) {
+    if (midrun) {
+      return <p className="note" style={{ margin: 0 }}>
+        No midrun published yet — run <code>bash scripts/midrun.sh</code> in ResearchGateEOD.
+        {data?.error && <><br /><span style={{ color: 'var(--text-muted)' }}>{data.error}</span></>}
+      </p>
+    }
     return <p className="note" style={{ margin: 0 }}>
       No live prediction available — run <code>RUN_MODE=predict scripts/launch.sh</code>.
     </p>
@@ -76,7 +82,8 @@ export default function NextSession ({ data }) {
     <>
       <div className="controls">
         <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-          Close of <strong style={{ color: 'var(--text-primary)' }}>{data.asOf}</strong> →
+          {midrun ? 'IB price on' : 'Close of'} <strong style={{ color: 'var(--text-primary)' }}>{data.asOf}</strong>
+          {midrun && data.midrunAsOf && ` (${new Date(data.midrunAsOf).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`} →
           expected for <strong style={{ color: 'var(--text-primary)' }}>{data.forSession}</strong>
           {' · '}<strong style={{ color: 'var(--text-primary)' }}>{data.up}</strong> up
           {' / '}<strong style={{ color: 'var(--text-primary)' }}>{data.down}</strong> down
@@ -115,7 +122,10 @@ export default function NextSession ({ data }) {
           <thead>
             <tr>
               {th('ticker', 'Ticker')}
-              {th('lastClose', `Close ${data.asOf}`, 'Adjusted close the prediction was computed from')}
+              {midrun && th('officialClose', `Close ${data.officialAsOf}`, 'Last official close, from data/ohlcv')}
+              {th('lastClose', midrun ? `IB ${data.asOf}` : `Close ${data.asOf}`,
+                  midrun ? "IB's price at the midrun, treated as today's close"
+                         : 'Adjusted close the prediction was computed from')}
               {th('impliedClose', 'Expected', 'Close the model implies for the next session')}
               {live && th('livePrice', 'Live', 'Latest EODHD trade print when you pressed the button')}
               {th('pred', 'Change')}
@@ -129,6 +139,7 @@ export default function NextSession ({ data }) {
               return (
                 <tr key={r.ticker}>
                   <td style={{ fontWeight: 560 }}><TickerLink ticker={r.ticker} /></td>
+                  {midrun && <td>{fmt(r.officialClose)}</td>}
                   <td>{fmt(r.lastClose)}</td>
                   <td style={{ fontWeight: 560 }}>{fmt(r.impliedClose)}</td>
                   {live && (

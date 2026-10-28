@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import TickerLink from './TickerLink.jsx'
-import { j } from '../api.js'
+import { j, withDb } from '../api.js'
 import StatTile from './StatTile.jsx'
 import StopLossChart from './StopLossChart.jsx'
 
@@ -19,7 +19,7 @@ const REASON = {
  * chart is fetched per stock on demand because each one carries ~1,400 daily
  * balances per level and the list endpoint deliberately omits them.
  */
-export default function StopLoss ({ data }) {
+export default function StopLoss ({ data, db = 'rg' }) {
   const stops = (data.stops || []).map(s => s.toFixed(2))
   const [sel, setSel] = useState(stops[1] || stops[0])
   const [sort, setSort] = useState({ key: `end_${stops[1] || stops[0]}`, dir: 'desc' })
@@ -30,11 +30,11 @@ export default function StopLoss ({ data }) {
   useEffect(() => {                       // fetch a stock's series the first time it opens
     if (!open || detail[open]) return
     let live = true
-    j(`/api/strategy/${open}`)
+    j(withDb(`/api/strategy/${open}`, db))
       .then(d => live && setDetail(p => ({ ...p, [open]: d })))
       .catch(e => live && setDetail(p => ({ ...p, [open]: { error: e.message } })))
     return () => { live = false }
-  }, [open, detail])
+  }, [open, detail, db])
 
   const rows = useMemo(() => {
     const f = q.trim().toUpperCase()
