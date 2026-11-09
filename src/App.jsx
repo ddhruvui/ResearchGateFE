@@ -127,6 +127,21 @@ export default function App () {
         </span>
       </p>
 
+      <div className="card">
+        <h2>Tomorrow&rsquo;s prediction{midrun && ' — midrun'}</h2>
+        {midrun ? (
+          <p className="note">
+            Made during the day, as if IB&rsquo;s price
+            {next?.midrunAsOf && <> at <strong>{new Date(next.midrunAsOf).toLocaleString()}</strong></>}
+            {' '}were today&rsquo;s close — the official model, fed today&rsquo;s partial bar. Not graded:
+            tonight&rsquo;s run makes the official prediction from the real close.
+          </p>
+        ) : (
+          <p className="note">Live paper trade — no answer exists yet. It gets graded on the next run.</p>
+        )}
+        <NextSession data={next} midrun={midrun} />
+      </div>
+
       <div className="kpis">
         <StatTile label="Direction accuracy" value={pct(o.direction_accuracy)}
                   delta={`vs coin flip 50.00% · p=${Number(o.p_value_vs_coin).toExponential(1)}`} tone="pos" />
@@ -215,21 +230,6 @@ export default function App () {
           </div>
         </div>
       )}
-
-      <div className="card">
-        <h2>Tomorrow&rsquo;s prediction{midrun && ' — midrun'}</h2>
-        {midrun ? (
-          <p className="note">
-            Made during the day, as if IB&rsquo;s price
-            {next?.midrunAsOf && <> at <strong>{new Date(next.midrunAsOf).toLocaleString()}</strong></>}
-            {' '}were today&rsquo;s close — the official model, fed today&rsquo;s partial bar. Not graded:
-            tonight&rsquo;s run makes the official prediction from the real close.
-          </p>
-        ) : (
-          <p className="note">Live paper trade — no answer exists yet. It gets graded on the next run.</p>
-        )}
-        <NextSession data={next} midrun={midrun} />
-      </div>
 
       <div className="card">
         <h2>Reading this</h2>

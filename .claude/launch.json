@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "dashboard", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 5273 }
+    { "name": "backend", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "../ResearchGateBE", "run", "dev"], "port": 8892 },
+    { "name": "dashboard", "runtimeExecutable": "env", "runtimeArgs": ["VITE_PROXY_TARGET=http://localhost:8892", "npm", "run", "dev"], "port": 5273 }
   ]
 }
