@@ -1,0 +1,1367 @@
+{
+ "forSession": "2026-11-09",
+ "asOf": "2026-11-06",
+ "up": 115,
+ "down": 36,
+ "rows": [
+  {
+   "ticker": "AMD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 449.04,
+   "pred": 0.34674222137752037,
+   "impliedClose": 604.7411270873617,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CRWD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 216.9,
+   "pred": 0.25664042469256343,
+   "impliedClose": 272.565308115817,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CSCO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 93.85,
+   "pred": 0.1786575564410808,
+   "impliedClose": 110.61701167199543,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "LRCX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 200.44,
+   "pred": 0.14261834871672452,
+   "impliedClose": 229.02642181678027,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ADI",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 363.56,
+   "pred": 0.12351226000465473,
+   "impliedClose": 408.4641172472923,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AVGO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 293.69,
+   "pred": 0.11856232749271246,
+   "impliedClose": 328.51056996133474,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MS",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 181.44,
+   "pred": 0.07981783659853758,
+   "impliedClose": 195.92214827243865,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "HOOD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 80.91,
+   "pred": 0.07951482117288984,
+   "impliedClose": 87.34354418109851,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "VLO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 346.45,
+   "pred": 0.06998606058112658,
+   "impliedClose": 370.6966706883313,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GOOG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 283.93,
+   "pred": 0.06963719042837972,
+   "impliedClose": 303.7020874783299,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GOOGL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 284.78,
+   "pred": 0.056963889406713805,
+   "impliedClose": 301.0021764252439,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "NEE",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 86.95,
+   "pred": 0.04883174456333863,
+   "impliedClose": 91.1959201897823,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DIS",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 116.75,
+   "pred": 0.04280217763554524,
+   "impliedClose": 121.7471542389499,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SNOW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 275.88,
+   "pred": 0.03132175746057241,
+   "impliedClose": 284.5210464482227,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DDOG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 179.04,
+   "pred": 0.02744053751684631,
+   "impliedClose": 183.95295383701614,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MPC",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 372.74,
+   "pred": 0.022911562429250156,
+   "impliedClose": 381.28005577987875,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "NVDA",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 186.64,
+   "pred": 0.021775160599005024,
+   "impliedClose": 190.7041159741983,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GEV",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 774.11,
+   "pred": 0.02110726861864871,
+   "impliedClose": 790.4493477103821,
+   "nTrain": 642
+  },
+  {
+   "ticker": "CB",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 365.02,
+   "pred": 0.020586046224590662,
+   "impliedClose": 372.53431859290004,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MCD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 276.52,
+   "pred": 0.014651438918574542,
+   "impliedClose": 280.57141588976424,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "WDC",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 263.78,
+   "pred": 0.014386715536733936,
+   "impliedClose": 267.57492782427965,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "LIN",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 515.25,
+   "pred": 0.014067189446011439,
+   "impliedClose": 522.4981193620573,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SRE",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 78.17,
+   "pred": 0.013569213275494848,
+   "impliedClose": 79.23070540174542,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SHW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 344.1,
+   "pred": 0.01044193409247103,
+   "impliedClose": 347.69306952121934,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "TJX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 135.3,
+   "pred": 0.009702338556177288,
+   "impliedClose": 136.61272640665078,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PWR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 540.9,
+   "pred": 0.009497487675694015,
+   "impliedClose": 546.0371910837828,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MDT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 101.8,
+   "pred": 0.009316118317649813,
+   "impliedClose": 102.74838084473674,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "COST",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 1053.56,
+   "pred": 0.008848792883277957,
+   "impliedClose": 1062.8827342301063,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "HD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 343.47,
+   "pred": 0.008595217327432958,
+   "impliedClose": 346.4221992954535,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "EMR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 162.35,
+   "pred": 0.008580544665329003,
+   "impliedClose": 163.74305142641617,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ABBV",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 291.31,
+   "pred": 0.007999312838815584,
+   "impliedClose": 293.6402798230754,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "NEM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 120.91,
+   "pred": 0.007187399845495462,
+   "impliedClose": 121.77902851531886,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PLTR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 160.38,
+   "pred": 0.0070813972538264006,
+   "impliedClose": 161.51571449156867,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DUK",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 127.78,
+   "pred": 0.0065534833563756865,
+   "impliedClose": 128.61740410327766,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "NOW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 101.97,
+   "pred": 0.006533256182655753,
+   "impliedClose": 102.6361961329454,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "LOW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 224.55,
+   "pred": 0.005434277573986552,
+   "impliedClose": 225.7702670292387,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ETN",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 341.72,
+   "pred": 0.004841005332411657,
+   "impliedClose": 343.3742683421918,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "TMO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 694.76,
+   "pred": 0.004822077549286329,
+   "impliedClose": 698.1101865981423,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "TSLA",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 358.22,
+   "pred": 0.004633662419163551,
+   "impliedClose": 359.8798705517928,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "JCI",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 135.03,
+   "pred": 0.004457119576301058,
+   "impliedClose": 135.63184485638791,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "TXN",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 277.36,
+   "pred": 0.003681760537996794,
+   "impliedClose": 278.3811731028188,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "KO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 95.67,
+   "pred": 0.003458674167125413,
+   "impliedClose": 96.00089135756889,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ASML",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 1424.75,
+   "pred": 0.003405654710611248,
+   "impliedClose": 1429.6022065489433,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "T",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 21.63,
+   "pred": 0.0028636003703726865,
+   "impliedClose": 21.69193967601116,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "EQIX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 1012.71,
+   "pred": 0.0028375996871937066,
+   "impliedClose": 1015.583665579218,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CVX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 212.61,
+   "pred": 0.0026678185298950044,
+   "impliedClose": 213.177204897641,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ANET",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 170.8,
+   "pred": 0.002618469980206798,
+   "impliedClose": 171.24723467261933,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BLK",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 1178.87,
+   "pred": 0.0024031616284716515,
+   "impliedClose": 1181.7030151489562,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "JNJ",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 276.22,
+   "pred": 0.0023264448581925157,
+   "impliedClose": 276.86261059873,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "C",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 119.05,
+   "pred": 0.0022939685927130214,
+   "impliedClose": 119.32309696096249,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DELL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 328.53,
+   "pred": 0.0020808892798987078,
+   "impliedClose": 329.2136345551251,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "O",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 59.04,
+   "pred": 0.002056092342148205,
+   "impliedClose": 59.16139169188043,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "VST",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 124.8,
+   "pred": 0.0020406982285187843,
+   "impliedClose": 125.05467913891914,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GILD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 166.89,
+   "pred": 0.001982199512257258,
+   "impliedClose": 167.22080927660062,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "STX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 460.99,
+   "pred": 0.0019078418551250614,
+   "impliedClose": 461.86949601679413,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BKNG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 160.665,
+   "pred": 0.001783018532598497,
+   "impliedClose": 160.95146867253993,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GE",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 323.24,
+   "pred": 0.0014846294513801777,
+   "impliedClose": 323.71989162386416,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "NUE",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 244.97,
+   "pred": 0.0014676950576573823,
+   "impliedClose": 245.3295412582743,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AAPL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 342.37,
+   "pred": 0.0014601738299142672,
+   "impliedClose": 342.8699197141477,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MRVL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 141.2,
+   "pred": 0.001447643009430615,
+   "impliedClose": 141.4044071929316,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PANW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 313.84,
+   "pred": 0.0014103293610585133,
+   "impliedClose": 314.2826177666746,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PSX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 245.72,
+   "pred": 0.0014002603441611724,
+   "impliedClose": 246.06407197176728,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CEG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 249.95,
+   "pred": 0.001385368454035731,
+   "impliedClose": 250.2962728450862,
+   "nTrain": 1191
+  },
+  {
+   "ticker": "CSX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 49.12,
+   "pred": 0.0013754777029690085,
+   "impliedClose": 49.18756346476984,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "TSM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 375.44,
+   "pred": 0.001319885214337833,
+   "impliedClose": 375.935537704871,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MDLZ",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 66.02,
+   "pred": 0.0013110915956807267,
+   "impliedClose": 66.10655826714684,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AMAT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 332.72,
+   "pred": 0.0012704508356982244,
+   "impliedClose": 333.14270440205354,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "UAL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 112.74,
+   "pred": 0.0011866145913564424,
+   "impliedClose": 112.87377892902951,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "WFC",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 83.94,
+   "pred": 0.0011775464826306822,
+   "impliedClose": 84.03884325175201,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DE",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 671.65,
+   "pred": 0.001164222187666243,
+   "impliedClose": 672.4319498323459,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PSA",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 337.46,
+   "pred": 0.0010979180320737927,
+   "impliedClose": 337.8305034191036,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CAT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 558.63,
+   "pred": 0.0010750716396730805,
+   "impliedClose": 559.2305672700705,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DASH",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 179.67,
+   "pred": 0.0010538566093225925,
+   "impliedClose": 179.85934641699697,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "XOM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 165.87,
+   "pred": 0.001030585552492214,
+   "impliedClose": 166.0409432255919,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "COP",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 136.27,
+   "pred": 0.0009556831625417243,
+   "impliedClose": 136.40023094455955,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "INTC",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 56.28,
+   "pred": 0.0009365439157949503,
+   "impliedClose": 56.33270869158094,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "IBM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 245,
+   "pred": 0.0008918715487654015,
+   "impliedClose": 245.21850852944752,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "WELL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 245.01,
+   "pred": 0.0008785008813829249,
+   "impliedClose": 245.22524150094765,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 197.88,
+   "pred": 0.0008782651334373636,
+   "impliedClose": 198.05379110460458,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CME",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 305.89,
+   "pred": 0.0008532688335999275,
+   "impliedClose": 306.1510064035098,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GS",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 865.82,
+   "pred": 0.00084898591530238,
+   "impliedClose": 866.5550689851873,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AMGN",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 460.42,
+   "pred": 0.0007789471570191746,
+   "impliedClose": 460.77864285003477,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PFE",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 29.39,
+   "pred": 0.0007768841880611173,
+   "impliedClose": 29.412832626287116,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MNST",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 45.72,
+   "pred": 0.0007476111457320377,
+   "impliedClose": 45.75418078158287,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "UBER",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 68.59,
+   "pred": 0.0007421050726356048,
+   "impliedClose": 68.64090098693207,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MMM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 185.15,
+   "pred": 0.0007215119337817428,
+   "impliedClose": 185.2835879345397,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 76.12,
+   "pred": 0.0006952502325887867,
+   "impliedClose": 76.17292244770466,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MRK",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 146.73,
+   "pred": 0.0006848142846760705,
+   "impliedClose": 146.8304827999905,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "V",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 422.65,
+   "pred": 0.000667912471144519,
+   "impliedClose": 422.9322932059292,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PGR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 227.77,
+   "pred": 0.0006500154130702029,
+   "impliedClose": 227.91805401063502,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CTAS",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 222.36,
+   "pred": 0.0006427384254203581,
+   "impliedClose": 222.5029193162765,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "LMT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 567.08,
+   "pred": 0.0006409044961611556,
+   "impliedClose": 567.443444121683,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AMZN",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 259.3,
+   "pred": 0.0006165782589823671,
+   "impliedClose": 259.45987874255417,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 354.06,
+   "pred": 0.0005972370064791324,
+   "impliedClose": 354.271457734514,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "QQQ",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 656.1,
+   "pred": 0.0005606829979508839,
+   "impliedClose": 656.4678641149557,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BNY",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 147.72,
+   "pred": 0.0005318892492819885,
+   "impliedClose": 147.79857067990395,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SO",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 92.34,
+   "pred": 0.0005317150581051867,
+   "impliedClose": 92.38909856846544,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BRK-B",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 570.89,
+   "pred": 0.000526029834984739,
+   "impliedClose": 571.1903051724944,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PH",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 917.79,
+   "pred": 0.0005193961957997076,
+   "impliedClose": 918.2666966345429,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SPY",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 735.29,
+   "pred": 0.0004899622435049038,
+   "impliedClose": 735.6502643380267,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ECL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 300.68,
+   "pred": 0.00039829211865183436,
+   "impliedClose": 300.7997584742362,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DLR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 174.2,
+   "pred": 0.00038881827275853036,
+   "impliedClose": 174.26773214311453,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MA",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 652.7,
+   "pred": 0.00036013325023388185,
+   "impliedClose": 652.9350589724277,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ADP",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 303.35,
+   "pred": 0.00033897747836317954,
+   "impliedClose": 303.45282881806145,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SBUX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 105.41,
+   "pred": 0.00024736038664580377,
+   "impliedClose": 105.43607425835633,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "VZ",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 45.69,
+   "pred": 0.00024322353243540063,
+   "impliedClose": 45.70111288319697,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AAL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 13.18,
+   "pred": 0.00016382225280146085,
+   "impliedClose": 13.182159177291924,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PLD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 126.96,
+   "pred": 0.00015845227732860632,
+   "impliedClose": 126.98011710112964,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "UNH",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 394.15,
+   "pred": 0.000127439302202164,
+   "impliedClose": 394.20023020096295,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "META",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 610.15,
+   "pred": 8.40248880107289e-05,
+   "impliedClose": 610.2012677854198,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ABT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 109.93,
+   "pred": 6.06980586386207e-05,
+   "impliedClose": 109.93667253758615,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PEP",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 141.34,
+   "pred": 5.789309175726457e-05,
+   "impliedClose": 141.34818260958897,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "D",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 68.6,
+   "pred": 5.469012739638655e-05,
+   "impliedClose": 68.60375174273938,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "CRM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 213.65,
+   "pred": 4.054612385904052e-05,
+   "impliedClose": 213.6586626793625,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AXP",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 320.99,
+   "pred": 3.361238727519209e-06,
+   "impliedClose": 320.9910789240192,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AMT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 188.79,
+   "pred": -8.229560968225714e-05,
+   "impliedClose": 188.77446341184807,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "UPS",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 108.3,
+   "pred": -0.0001718111927786395,
+   "impliedClose": 108.28139284782208,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MSFT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 530.61,
+   "pred": -0.00034364432328503063,
+   "impliedClose": 530.4276588856218,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MRNA",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 254.19,
+   "pred": -0.0004943261558515352,
+   "impliedClose": 254.06434723444409,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SPGI",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 467.8,
+   "pred": -0.0006413566102458742,
+   "impliedClose": 467.499973377727,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "USB",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 59.45,
+   "pred": -0.0008664620647510256,
+   "impliedClose": 59.39848883025055,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "PG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 165.4,
+   "pred": -0.0013275953592974147,
+   "impliedClose": 165.1804157275722,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BMY",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 62.14,
+   "pred": -0.001375190835017019,
+   "impliedClose": 62.05454564151204,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "RTX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 189.53,
+   "pred": -0.0014016135832826395,
+   "impliedClose": 189.26435217756045,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "VRTX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 547.09,
+   "pred": -0.0023168991806655085,
+   "impliedClose": 545.8224476272497,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "COF",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 201.87,
+   "pred": -0.002413316584493523,
+   "impliedClose": 201.3828237810883,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "HLT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 370.45,
+   "pred": -0.0024963307520212245,
+   "impliedClose": 369.52523427291374,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ABNB",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 189.99,
+   "pred": -0.002524508056689222,
+   "impliedClose": 189.5103687143096,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SPG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 228.42,
+   "pred": -0.003253956298332566,
+   "impliedClose": 227.67673130233487,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "APH",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 74.59,
+   "pred": -0.004011216155885766,
+   "impliedClose": 74.29080338693248,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MAR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 416.47,
+   "pred": -0.004886642657072974,
+   "impliedClose": 414.43485993260884,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "NFLX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 63.41,
+   "pred": -0.005715258587164287,
+   "impliedClose": 63.04759545298791,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "UNP",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 290.16,
+   "pred": -0.00632608941573553,
+   "impliedClose": 288.32442189513023,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "GLW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 106.13,
+   "pred": -0.00723511185054987,
+   "impliedClose": 105.36213757930113,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "SCHW",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 91.49,
+   "pred": -0.00944434163574551,
+   "impliedClose": 90.62593718374563,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "APD",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 304.84,
+   "pred": -0.010071861893273632,
+   "impliedClose": 301.76969362045446,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "LLY",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 1354,
+   "pred": -0.010863998590730197,
+   "impliedClose": 1339.2901459081513,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "TT",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 401.76,
+   "pred": -0.011806564473398347,
+   "impliedClose": 397.0165946571675,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "DHR",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 230.25,
+   "pred": -0.011971313341829526,
+   "impliedClose": 227.49360510304373,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ISRG",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 452.8,
+   "pred": -0.012031766104084237,
+   "impliedClose": 447.3520163080707,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "AEP",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 126.53,
+   "pred": -0.014147102102363914,
+   "impliedClose": 124.7399671709879,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "WM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 236.26,
+   "pred": -0.02062810945626465,
+   "impliedClose": 231.3864028598629,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BA",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 173.4,
+   "pred": -0.022046056290840096,
+   "impliedClose": 169.57721383916834,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "KLAC",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 138.49,
+   "pred": -0.03590131002118447,
+   "impliedClose": 133.51802757516617,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ORCL",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 116.1,
+   "pred": -0.03721195026171447,
+   "impliedClose": 111.77969257461496,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "JPM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 334.49,
+   "pred": -0.054302899265497945,
+   "impliedClose": 316.3262232246836,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "QCOM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 165.41,
+   "pred": -0.07298015127228412,
+   "impliedClose": 153.33835317805148,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "MU",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 690,
+   "pred": -0.08128607348080787,
+   "impliedClose": 633.9126092982426,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "BAC",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 49.42,
+   "pred": -0.08356221708246787,
+   "impliedClose": 45.29035523178444,
+   "nTrain": 1260
+  },
+  {
+   "ticker": "ARM",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 174.62,
+   "pred": -0.10136767699078231,
+   "impliedClose": 156.9191762438696,
+   "nTrain": 776
+  },
+  {
+   "ticker": "FCX",
+   "forSession": "2026-11-09",
+   "asOf": "2026-11-06",
+   "lastClose": 59.42,
+   "pred": -0.13915668330166633,
+   "impliedClose": 51.15130987821499,
+   "nTrain": 1260
+  }
+ ]
+}

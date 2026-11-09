@@ -1,0 +1,99 @@
+{
+ "overall": {
+  "n": 217408,
+  "direction_accuracy": 0.5108091698557551,
+  "p_value_vs_coin": 6.895444275849522e-24,
+  "baseline_always_up": 0.522639461289373,
+  "baseline_last_dir": 0.4997286208419193,
+  "edge_vs_always_up": -0.011830291433617912,
+  "mse_model": 0.0008050927465032171,
+  "mse_zero_baseline": 0.00048566098848271024,
+  "mae_model": 0.01730888567925474,
+  "mae_zero_baseline": 0.01453962447213625,
+  "mean_actual_return": 0.000842319056634423
+ },
+ "liveOnly": {
+  "n": 1661,
+  "direction_accuracy": 0.5231788079470199,
+  "p_value_vs_coin": 0.06217903011599887,
+  "baseline_always_up": 0.4876580373269115,
+  "baseline_last_dir": 0.48404575556893437,
+  "edge_vs_always_up": 0.03552077062010839,
+  "mse_model": 0.0022242535552019107,
+  "mse_zero_baseline": 0.001240765504451431,
+  "mae_model": 0.02830363842508974,
+  "mae_zero_baseline": 0.023498246374927954,
+  "mean_actual_return": -0.0028561235987159014
+ },
+ "bySource": {
+  "backtest": 216313,
+  "live": 1661
+ },
+ "byYear": [
+  {
+   "year": 2021,
+   "n": 36058,
+   "accuracy": 0.5217704808918964,
+   "baseline": 0.5354151644572633,
+   "edge": -0.013644683565366966
+  },
+  {
+   "year": 2022,
+   "n": 36890,
+   "accuracy": 0.4917321767416644,
+   "baseline": 0.4906207644348062,
+   "edge": 0.0011114123068582393
+  },
+  {
+   "year": 2023,
+   "n": 37106,
+   "accuracy": 0.5105643292189942,
+   "baseline": 0.5272193176305718,
+   "edge": -0.016654988411577643
+  },
+  {
+   "year": 2024,
+   "n": 37499,
+   "accuracy": 0.5127336728979439,
+   "baseline": 0.5306808181551508,
+   "edge": -0.017947145257206865
+  },
+  {
+   "year": 2025,
+   "n": 37591,
+   "accuracy": 0.5170652549812456,
+   "baseline": 0.5347290574871645,
+   "edge": -0.017663802505918924
+  },
+  {
+   "year": 2026,
+   "n": 32264,
+   "accuracy": 0.5111269526407141,
+   "baseline": 0.516272005950905,
+   "edge": -0.0051450533101909945
+  }
+ ],
+ "nTickers": 151,
+ "range": {
+  "start": "2021-01-04",
+  "end": "2026-11-06"
+ },
+ "runId": "pso_lssvm_v1",
+ "db": "ResearchGate",
+ "origin": "s3://crimtr8kbf/results/ResearchGate/runs/pso_lssvm_v1/latest",
+ "publishedAt": "2026-11-07T09:36:37.333061+00:00",
+ "forSession": "2026-11-09",
+ "asOf": "2026-11-06",
+ "runMeta": {
+  "mode": "daily",
+  "stamp": "20261107T093534Z",
+  "graded": 151,
+  "new_guesses": 151,
+  "retuned": [],
+  "rows_total": 217974,
+  "rows_live": 1661,
+  "errors": 0,
+  "for_session": "2026-11-09"
+ },
+ "loadedAt": "2026-11-09T17:38:09.907Z"
+}

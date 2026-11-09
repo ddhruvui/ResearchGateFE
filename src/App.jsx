@@ -1,304 +1,121 @@
-import { useEffect, useRef, useState } from 'react'
-import { API_BASE, j, withDb } from './api.js'
-import StatTile from './components/StatTile.jsx'
-import EquityChart from './components/EquityChart.jsx'
-import YearEdgeChart from './components/YearEdgeChart.jsx'
-import TickerTable from './components/TickerTable.jsx'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { withDb } from './api.js'
+import { matchesQuery, useResource, useTheme } from './hooks.js'
+import AppBar from './components/AppBar.jsx'
+import SectionNav from './components/SectionNav.jsx'
+import Hero from './components/Hero.jsx'
+import Spotlight from './components/Spotlight.jsx'
 import NextSession from './components/NextSession.jsx'
-import StopLoss from './components/StopLoss.jsx'
-
-const COSTS = [0, 1, 5, 10]
-const STALE_AFTER_DAYS = 5          // a daily run that skips a long weekend is still fine
-const pct = v => `${(v * 100).toFixed(2)}%`
+import TickerTable from './components/TickerTable.jsx'
+import StopLoss, { stopKeys } from './components/StopLoss.jsx'
+import { ByYear, LiveRecord, Returns, Scorecard } from './components/Sections.jsx'
 
 /**
- * The midrun switch. Off (the default, on every load): the ResearchGate database, as
- * always. On: every panel reads the ResearchGateEOD database instead, and
- * "Tomorrow's prediction" shows its midrun — the guess made as if IB's price at the
- * time of the midrun were today's close.
+ * The dashboard. One page, answer first: tomorrow's call, the scorecard, then the
+ * detail. The app bar and section bar stay pinned; each section loads and fails on
+ * its own, so one slow or broken endpoint never blanks the page.
+ *
+ * The midrun switch. Off (the default, on every load): the ResearchGate database.
+ * On: every panel reads the ResearchGateEOD database instead, and "Tomorrow" shows
+ * its midrun, the guess made as if IB's price at the time of the midrun were today's
+ * close.
  */
-function MidrunToggle ({ on, onChange }) {
-  return (
-    <div className="topbar">
-      <button type="button" role="switch" aria-checked={on} className="switch"
-              onClick={() => onChange(!on)}
-              title="Show ResearchGateEOD's results and its intraday (midrun) prediction">
-        <span className="knob" aria-hidden="true" />
-        Midrun
-      </button>
-      <span className="topbar-note">
-        {on ? <>Showing <code>ResearchGateEOD</code> · tomorrow&rsquo;s prediction from today&rsquo;s IB price</>
-            : <>Showing <code>ResearchGate</code></>}
-      </span>
-    </div>
-  )
-}
-
-/**
- * One ticker search for the whole page. It filters every table at once, stays pinned to
- * the top, and owns the keyboard: any printable key pressed while focus is not in
- * another field lands here, so you can just start typing a ticker. Esc clears it.
- */
-function StockSearch ({ value, onChange }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    ref.current?.focus()
-    const onKey = e => {
-      const el = ref.current
-      if (!el || e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return
-      const t = e.target
-      if (t === el || t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return
-      if (e.key.length === 1 && e.key !== ' ') el.focus()   // the keystroke then types into it
-      else if (e.key === 'Escape') onChange('')
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onChange])
-
-  return (
-    <div className="search">
-      <span className="search-icon" aria-hidden="true">⌕</span>
-      <input ref={ref} type="search" value={value} placeholder="Search stock — just start typing"
-             aria-label="Search stock (filters every table)" spellCheck={false} autoComplete="off"
-             onChange={e => onChange(e.target.value.toUpperCase())}
-             onKeyDown={e => { if (e.key === 'Escape') onChange('') }} />
-      {value && <button type="button" className="search-clear" onClick={() => { onChange(''); ref.current?.focus() }}
-                        aria-label="Clear search">×</button>}
-    </div>
-  )
-}
-
 export default function App () {
   const [midrun, setMidrun] = useState(false)
-  const [query, setQuery] = useState('')
   const db = midrun ? 'eod' : 'rg'
-  const [summary, setSummary] = useState(null)
-  const [tickers, setTickers] = useState([])
-  const [next, setNext] = useState(null)
+  const [query, setQuery] = useState('')
+  const clearQuery = useCallback(() => setQuery(''), [])
+  const [theme, cycleTheme] = useTheme()
   const [costBps, setCostBps] = useState(0)
-  const [equity, setEquity] = useState(null)
-  const [strategy, setStrategy] = useState(null)
-  const [err, setErr] = useState(null)
+  const [stopPick, setStopPick] = useState(null)
 
-  useEffect(() => {
-    let live = true
-    setSummary(null); setTickers([]); setNext(null); setStrategy(null); setErr(null)
-    Promise.all([j(withDb('/api/summary', db)), j(withDb('/api/tickers', db))])
-      .then(([s, t]) => { if (live) { setSummary(s); setTickers(t) } })
-      .catch(e => live && setErr(e.message))
-    // With the toggle on, "Tomorrow's prediction" is the midrun. None published yet is
-    // a note in that panel, not a dashboard failure.
-    ;(midrun ? j('/api/midrun') : j('/api/next-session'))
-      .then(n => live && setNext(n))
-      .catch(e => live && setNext({ rows: [], error: e.message }))
-    // Optional: a run published before src.strategy existed has no stop-loss
-    // data. That is not a dashboard failure, so it never reaches setErr.
-    j(withDb('/api/strategy', db)).then(d => live && setStrategy(d)).catch(() => live && setStrategy(null))
-    return () => { live = false }
-  }, [db, midrun])
+  const summary = useResource(withDb('/api/summary', db))
+  const tickers = useResource(withDb('/api/tickers', db))
+  // None published yet is a note in that section, not a dashboard failure.
+  const next = useResource(midrun ? '/api/midrun' : '/api/next-session')
+  const equity = useResource(withDb(`/api/equity?costBps=${costBps}`, db), { keep: true })
+  // Optional: a run published before src.strategy existed has no stop-loss data.
+  // That is not a dashboard failure, so the section simply doesn't appear.
+  const strategy = useResource(withDb('/api/strategy', db))
 
-  useEffect(() => {
-    let live = true
-    setEquity(null)
-    j(withDb(`/api/equity?costBps=${costBps}`, db))
-      .then(d => live && setEquity(d)).catch(e => live && setErr(e.message))
-    return () => { live = false }
-  }, [costBps, db])
+  const stops = stopKeys(strategy.data)
+  const stop = stops.includes(stopPick) ? stopPick : (stops[1] || stops[0] || null)
 
-  const toggle = <MidrunToggle on={midrun} onChange={setMidrun} />
-  const search = <StockSearch value={query} onChange={setQuery} />
+  // Keep the pinned header's height in a CSS variable so jumps land below it.
+  const topRef = useRef(null)
+  useLayoutEffect(() => {
+    const el = topRef.current
+    if (!el) return
+    const set = () => document.documentElement.style.setProperty('--top-h', `${el.offsetHeight}px`)
+    set()
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(set)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
-  if (err) {
-    return (
-      <div className="wrap">
-        {toggle}
-        <h1>Dashboard</h1>
-        <div className="card" style={{ borderColor: 'var(--critical)', background: 'transparent' }}>
-          <h2 style={{ color: 'var(--critical)' }}>The API did not answer</h2>
-          <p className="note" style={{ margin: 0 }}>
-            {err}
-            <br />API base: <code>{API_BASE || '(same origin, dev proxy)'}</code>.
-            If this is a fresh deploy, check <code>VITE_API_BASE</code> on Render and that the run
-            has been published with <code>python3 -m src.publish_mongo</code>.
-          </p>
-        </div>
-      </div>
-    )
-  }
-  if (!summary) return <div className="wrap">{toggle}<p className="sub">Loading…</p></div>
+  const universe = useMemo(() => {
+    const s = new Set([
+      ...(tickers.data || []).map(r => r.ticker),
+      ...(next.data?.rows || []).map(r => r.ticker),
+    ])
+    return [...s].sort()
+  }, [tickers.data, next.data])
+  const matches = useMemo(() => universe.filter(t => matchesQuery(t, query)), [universe, query])
+  // An exact ticker, or a search that narrows to one stock, gets the spotlight.
+  const spot = query ? (universe.includes(query) ? query : matches.length === 1 ? matches[0] : null) : null
 
-  const o = summary.overall
-  const st = equity?.stats
-  const beatsBaseline = o.edge_vs_always_up > 0
-  const mseRatio = o.mse_model / o.mse_zero_baseline
-  const publishedAt = summary.publishedAt ? new Date(summary.publishedAt) : null
-  const ageDays = publishedAt ? (Date.now() - publishedAt.getTime()) / 864e5 : null
-  const stale = ageDays != null && ageDays > STALE_AFTER_DAYS
+  const hasLive = summary.data?.liveOnly?.n > 0
+  const hasStop = strategy.data?.rows?.length > 0
+  const sections = [
+    { id: 'tomorrow', label: 'Tomorrow' },
+    { id: 'scorecard', label: 'Scorecard' },
+    { id: 'returns', label: 'Returns' },
+    { id: 'by-year', label: 'By year' },
+    { id: 'stocks', label: 'Stocks' },
+    ...(hasLive ? [{ id: 'live', label: 'Live record' }] : []),
+    ...(hasStop ? [{ id: 'stop-loss', label: 'Stop loss' }] : []),
+  ]
 
   return (
-    <div className="wrap">
-      {toggle}
-      {search}
-      {stale && (
-        <div className="card" style={{
-          borderColor: 'var(--critical)', background: 'transparent', marginBottom: 18,
-        }}>
-          <h2 style={{ color: 'var(--critical)' }}>
-            Last published {Math.floor(ageDays)} days ago
-          </h2>
-          <p className="note" style={{ margin: 0 }}>
-            The daily run has not published since {publishedAt.toLocaleString()}. Numbers below are
-            correct for that date but may be behind the market. Source:{' '}
-            <code>{summary.origin}</code>
-          </p>
-        </div>
-      )}
-      <h1>PSO + LS-SVM — did it beat the guess?</h1>
-      <p className="sub">
-        {o.n.toLocaleString()} graded next-session predictions · {summary.nTickers} large-cap names ·
-        {' '}{summary.range.start} → {summary.range.end}
-        <br />
-        <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>
-          run <code>{summary.runId}</code> · published{' '}
-          {publishedAt ? publishedAt.toLocaleString() : 'unknown'} · MongoDB <code>{summary.db}</code>
-        </span>
-      </p>
+    <>
+      <div className="top" ref={topRef}>
+        <AppBar query={query} onQuery={setQuery} matches={matches.length} total={universe.length}
+                midrun={midrun} onMidrun={setMidrun} theme={theme} onTheme={cycleTheme} />
+        <SectionNav sections={sections} topRef={topRef} />
+      </div>
 
-      <div className="card">
-        <h2>Tomorrow&rsquo;s prediction{midrun && ' — midrun'}</h2>
-        {midrun ? (
-          <p className="note">
-            Made during the day, as if IB&rsquo;s price
-            {next?.midrunAsOf && <> at <strong>{new Date(next.midrunAsOf).toLocaleString()}</strong></>}
-            {' '}were today&rsquo;s close — the official model, fed today&rsquo;s partial bar. Not graded:
-            tonight&rsquo;s run makes the official prediction from the real close.
-          </p>
-        ) : (
-          <p className="note">Live paper trade — no answer exists yet. It gets graded on the next run.</p>
+      <main className="wrap">
+        <Hero summary={summary.data} error={summary.error} midrun={midrun} />
+
+        {spot && (
+          <Spotlight ticker={spot} next={next.data} midrun={midrun}
+                     record={tickers.data?.find(r => r.ticker === spot)}
+                     strategyRow={strategy.data?.rows?.find(r => r.ticker === spot)}
+                     stop={stop} startCapital={strategy.data?.startCapital} />
         )}
-        <NextSession data={next} midrun={midrun} query={query} />
-      </div>
 
-      <div className="kpis">
-        <StatTile label="Direction accuracy" value={pct(o.direction_accuracy)}
-                  delta={`vs coin flip 50.00% · p=${Number(o.p_value_vs_coin).toExponential(1)}`} tone="pos" />
-        <StatTile label="Always-up baseline" value={pct(o.baseline_always_up)}
-                  delta="the free alternative" />
-        <StatTile label="Edge over baseline"
-                  value={`${o.edge_vs_always_up >= 0 ? '+' : ''}${(o.edge_vs_always_up * 100).toFixed(2)}pp`}
-                  delta={beatsBaseline ? 'model wins' : 'model loses'}
-                  tone={beatsBaseline ? 'pos' : 'neg'} />
-        <StatTile label="Error vs predicting zero" value={`${mseRatio.toFixed(3)}×`}
-                  delta={mseRatio <= 1 ? 'better than no-change' : 'worse than no-change'}
-                  tone={mseRatio <= 1 ? 'pos' : 'neg'} />
-      </div>
+        <NextSession key={midrun ? 'midrun' : 'official'} data={next.error ? { rows: [], error: next.error } : next.data}
+                     loading={next.loading} midrun={midrun} query={query} onClearQuery={clearQuery} />
 
-      <div className="card">
-        <h2>If you had put $1 into each stock and followed the model</h2>
-        <p className="note">
-          Hold the share on days the model predicts up; sit in cash otherwise. Equal weight
-          across every name, rebased to 1.00×. Buy &amp; hold is the same dollar left invested
-          throughout — it is what the always-up baseline looks like as money.
-        </p>
-        <div className="controls">
-          <label>Trading cost per switch</label>
-          {COSTS.map(c => (
-            <button key={c} className="seg" aria-pressed={costBps === c} onClick={() => setCostBps(c)}>
-              {c === 0 ? 'none' : `${c} bps`}
-            </button>
-          ))}
-        </div>
-        {equity ? <EquityChart points={equity.points} /> :
-          <p className="note" style={{ margin: 0 }}>Computing…</p>}
-        {st && (
-          <div className="kpis" style={{ marginTop: 20, marginBottom: 0 }}>
-            <StatTile label="Model, final" value={`${st.modelFinal.toFixed(2)}×`}
-                      delta={`${(st.modelCagr * 100).toFixed(1)}% a year`} />
-            <StatTile label="Buy & hold, final" value={`${st.holdFinal.toFixed(2)}×`}
-                      delta={`${(st.holdCagr * 100).toFixed(1)}% a year`} />
-            <StatTile label="Model vs hold"
-                      value={`${((st.modelFinal / st.holdFinal - 1) * 100).toFixed(1)}%`}
-                      delta={st.modelFinal >= st.holdFinal ? 'ahead' : 'behind'}
-                      tone={st.modelFinal >= st.holdFinal ? 'pos' : 'neg'} />
-            <StatTile label="Switches per stock" value={Math.round(st.tradesPerTicker).toLocaleString()}
-                      delta="each one pays the cost above" />
-          </div>
+        <Scorecard summary={summary.data} error={summary.error} onRetry={summary.retry} />
+        <Returns equity={equity} costBps={costBps} onCost={setCostBps} />
+        <ByYear summary={summary.data} error={summary.error} onRetry={summary.retry} />
+
+        {tickers.error
+          ? <section id="stocks" className="sec"><div className="sec-head"><h2>Every stock</h2></div>
+              <div className="banner crit" role="alert"><b>The stock table didn&rsquo;t load</b>
+                <p>{tickers.error} <button type="button" className="btn" onClick={tickers.retry}>Try again</button></p></div>
+            </section>
+          : <TickerTable rows={tickers.data} loading={tickers.loading && !tickers.data} query={query} onClearQuery={clearQuery} />}
+
+        <LiveRecord summary={summary.data} />
+
+        {hasStop && (
+          <StopLoss key={db} data={strategy.data} db={db} sel={stop} onSel={setStopPick}
+                    query={query} onClearQuery={clearQuery} />
         )}
-      </div>
-
-      <div className="card">
-        <h2>Edge over the always-up baseline, by year</h2>
-        <p className="note">
-          Above zero means the model called direction better than simply saying &ldquo;up&rdquo; every day.
-          A pooled average can hide a model that only works in calm markets, so it is split by year.
-        </p>
-        <YearEdgeChart rows={summary.byYear} />
-      </div>
-
-      <div className="card">
-        <h2>Every stock</h2>
-        <p className="note">
-          <strong>Direction accuracy</strong> is how often that stock&rsquo;s up/down call was right.
-          Compare it with the <strong>always-up baseline</strong> beside it — the free alternative for
-          that same stock — and <strong>edge</strong> is the difference. Click any header to sort;
-          hover a header for what it means.
-        </p>
-        <TickerTable rows={tickers} query={query} />
-      </div>
-
-      {summary.liveOnly?.n > 0 && (
-        <div className="card">
-          <h2>Live track record</h2>
-          <p className="note">
-            Only predictions the model actually made in advance and had graded the next
-            day — <strong>{summary.liveOnly.n.toLocaleString()}</strong> of{' '}
-            {(summary.bySource?.backtest || 0).toLocaleString()} replayed rows. This is the
-            honest forward record; the replay above is a rehearsal.
-          </p>
-          <div className="kpis" style={{ marginBottom: 0 }}>
-            <StatTile label="Live direction accuracy" value={pct(summary.liveOnly.direction_accuracy)}
-                      delta={`${summary.liveOnly.n.toLocaleString()} graded live`} />
-            <StatTile label="Always-up baseline" value={pct(summary.liveOnly.baseline_always_up)}
-                      delta="same days, free alternative" />
-            <StatTile label="Live edge"
-                      value={`${summary.liveOnly.edge_vs_always_up >= 0 ? '+' : ''}${(summary.liveOnly.edge_vs_always_up * 100).toFixed(2)}pp`}
-                      delta={summary.liveOnly.edge_vs_always_up > 0 ? 'ahead' : 'behind'}
-                      tone={summary.liveOnly.edge_vs_always_up > 0 ? 'pos' : 'neg'} />
-          </div>
-        </div>
-      )}
-
-      <div className="card">
-        <h2>Reading this</h2>
-        <p className="verdict">
-          The model beats a coin flip with an overwhelming p-value, and that is the wrong benchmark.
-          Stocks drift up, so predicting &ldquo;up&rdquo; every day earns{' '}
-          <strong>{pct(o.baseline_always_up)}</strong> for free — and the model reaches{' '}
-          <strong>{pct(o.direction_accuracy)}</strong>, leaving it{' '}
-          <strong className={beatsBaseline ? 'pos' : 'neg'}>
-            {(o.edge_vs_always_up * 100).toFixed(2)}pp
-          </strong>{' '}
-          {beatsBaseline ? 'ahead of' : 'behind'} the free alternative. Its squared error is{' '}
-          <strong>{mseRatio.toFixed(3)}×</strong> that of simply predicting no change.
-          The equity curve above says the same thing in money.
-        </p>
-      </div>
-
-      {strategy?.rows?.length > 0 && (
-        <div className="card">
-          <h2>$10,000 in each stock, with a stop loss</h2>
-          <p className="note">
-            A second, harder question than direction: follow every call with real money and a
-            stop loss, and where do you end up? Each morning you take the position the model
-            asked for <strong>at the opening price</strong>, and you are out again by the closing
-            bell — whichever comes first of the model&rsquo;s target price, your stop loss, or the
-            close. When a day touches both the target and the stop, daily bars cannot say which
-            came first, so the <strong>stop</strong> is taken; that keeps the tight stops honest
-            rather than flattered.
-          </p>
-          <StopLoss key={db} data={strategy} db={db} query={query} />
-        </div>
-      )}
-    </div>
+      </main>
+    </>
   )
 }

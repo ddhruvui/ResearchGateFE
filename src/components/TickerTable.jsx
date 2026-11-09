@@ -1,72 +1,73 @@
 import { useMemo, useState } from 'react'
+import { matchesQuery, sortRows, useSort } from '../hooks.js'
+import { pct, pp } from '../format.js'
 import TickerLink from './TickerLink.jsx'
+import { Disclosure, EmptyRow, Section, Skeleton, SortHeader } from './ui.jsx'
 
-/** The table view — 100 names is past every chart's series ceiling, and a table
- *  also satisfies the accessibility requirement that identity never depends on
- *  colour alone. */
-export default function TickerTable ({ rows, query = '' }) {
-  const [sort, setSort] = useState({ key: 'edge', dir: 'desc' })
+/** Every stock's track record. A table, not a chart: 150 names is past every chart's
+ *  series ceiling, and identity here never depends on colour. */
+export default function TickerTable ({ rows, loading, query = '', onClearQuery }) {
+  const [sort, onSort] = useSort({ key: 'edge', dir: 'desc' })
   const [onlyBeat, setOnlyBeat] = useState(false)
+  const list = useMemo(() => rows || [], [rows])
 
-  const view = useMemo(() => {
-    const f = query.trim().toUpperCase()
-    const out = rows.filter(r => (!f || r.ticker.includes(f)) && (!onlyBeat || r.edge > 0))
-    const { key, dir } = sort
-    return out.sort((a, b) => (dir === 'asc' ? 1 : -1) *
-      (typeof a[key] === 'string' ? a[key].localeCompare(b[key]) : a[key] - b[key]))
-  }, [rows, sort, query, onlyBeat])
+  const view = useMemo(() => sortRows(
+    list.filter(r => matchesQuery(r.ticker, query) && (!onlyBeat || r.edge > 0)), sort,
+  ), [list, sort, query, onlyBeat])
 
-  const beat = rows.filter(r => r.edge > 0).length
-  const th = (key, label, help) => (
-    <th onClick={() => setSort(s => ({ key, dir: s.key === key && s.dir === 'desc' ? 'asc' : 'desc' }))}
-        title={help ? `${help} — click to sort` : 'Click to sort'}>
-      {label}{sort.key === key ? (sort.dir === 'desc' ? ' ↓' : ' ↑') : ''}
-    </th>
-  )
+  const beat = list.filter(r => r.edge > 0).length
+  const maxEdge = Math.max(0.0001, ...list.map(r => Math.abs(r.edge)))
+
+  if (loading) return <Section id="stocks" title="Every stock"><Skeleton lines={8} height={300} /></Section>
 
   return (
-    <>
-      <div className="controls">
-        <span style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>
-          {beat} of {rows.length} beat the baseline
-        </span>
-        <span style={{ flex: 1 }} />
-        <button className="seg" aria-pressed={onlyBeat} onClick={() => setOnlyBeat(v => !v)}>
-          only those that beat it
-        </button>
-      </div>
-      <div className="scroll">
-        <table>
+    <Section id="stocks" title="Every stock"
+             sub={<><b>{beat} of {list.length}</b> beat the always-up baseline.</>}
+             tools={<button type="button" className="btn" aria-pressed={onlyBeat} onClick={() => setOnlyBeat(v => !v)}>
+               Only those that beat it</button>}>
+      <div className="tw">
+        <table className="t">
           <thead>
             <tr>
-              {th('ticker', 'Ticker')}
-              {th('n', 'Predictions', 'Graded next-session calls for this stock')}
-              {th('accuracy', 'Direction accuracy',
-                  'How often the model called up vs down correctly')}
-              {th('baseline', 'Always-up baseline',
-                  'How often simply saying "up" every day would have been right')}
-              {th('edge', 'Edge',
-                  'Direction accuracy minus the baseline. Above zero means the model added something')}
-              {th('mseRatio', 'Error vs no-change',
-                  'Model squared error over that of predicting zero. Below 1 is better than no-change')}
+              <SortHeader sort={sort} onSort={onSort} k="ticker">Ticker</SortHeader>
+              <SortHeader sort={sort} onSort={onSort} k="n" className="opt" title="Graded next-session calls for this stock">Predictions</SortHeader>
+              <SortHeader sort={sort} onSort={onSort} k="accuracy" title="How often the model called up vs down correctly">Direction accuracy</SortHeader>
+              <SortHeader sort={sort} onSort={onSort} k="baseline" className="opt" title='How often simply saying "up" every day would have been right'>Always-up baseline</SortHeader>
+              <SortHeader sort={sort} onSort={onSort} k="edge" title="Direction accuracy minus the baseline. Above zero means the model added something">Edge</SortHeader>
+              <SortHeader sort={sort} onSort={onSort} k="mseRatio" className="opt" title="Model squared error over that of predicting zero. Below 1 is better than no-change">Error vs no-change</SortHeader>
             </tr>
           </thead>
           <tbody>
-            {view.map(r => (
-              <tr key={r.ticker}>
-                <td style={{ fontWeight: 560 }}><TickerLink ticker={r.ticker} /></td>
-                <td>{r.n.toLocaleString()}</td>
-                <td>{(r.accuracy * 100).toFixed(2)}%</td>
-                <td>{(r.baseline * 100).toFixed(2)}%</td>
-                <td className={r.edge >= 0 ? 'pos' : 'neg'}>
-                  {r.edge >= 0 ? '+' : ''}{(r.edge * 100).toFixed(2)}pp
-                </td>
-                <td className={r.mseRatio <= 1 ? 'pos' : 'neg'}>{r.mseRatio.toFixed(3)}×</td>
-              </tr>
-            ))}
+            {view.length ? view.map(r => {
+              const w = (Math.abs(r.edge) / maxEdge) * 50
+              return (
+                <tr key={r.ticker}>
+                  <td><TickerLink ticker={r.ticker} /><span className="sub">always-up {pct(r.baseline)}</span></td>
+                  <td className="opt">{r.n.toLocaleString()}</td>
+                  <td>{pct(r.accuracy)}</td>
+                  <td className="opt">{pct(r.baseline)}</td>
+                  <td className={r.edge >= 0 ? 'up-t' : 'down-t'}>
+                    {pp(r.edge)}
+                    <span className="ebar" aria-hidden="true">
+                      <span style={r.edge >= 0
+                        ? { left: '50%', width: `${w}%`, background: 'var(--pos)' }
+                        : { left: `${50 - w}%`, width: `${w}%`, background: 'var(--neg)' }} />
+                    </span>
+                  </td>
+                  <td className={`opt ${r.mseRatio <= 1 ? 'up-t' : 'down-t'}`}>{r.mseRatio.toFixed(3)}×</td>
+                </tr>
+              )
+            }) : <EmptyRow colSpan={6} query={query} onClear={onClearQuery} />}
           </tbody>
         </table>
       </div>
-    </>
+      <Disclosure summary="What the columns mean">
+        <p><strong>Direction accuracy</strong> is how often that stock&rsquo;s up/down call was right.
+          Compare it with the <strong>always-up baseline</strong> beside it, the free alternative for that
+          same stock; <strong>edge</strong> is the difference.</p>
+        <p><strong>Error vs no-change</strong> is the model&rsquo;s squared error over that of predicting
+          zero. Below 1 is better than no change. Click any header to sort; hover a header for what it means.</p>
+      </Disclosure>
+    </Section>
   )
 }
