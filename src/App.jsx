@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { API_BASE, j, withDb } from './api.js'
 import StatTile from './components/StatTile.jsx'
 import EquityChart from './components/EquityChart.jsx'
@@ -34,8 +34,43 @@ function MidrunToggle ({ on, onChange }) {
   )
 }
 
+/**
+ * One ticker search for the whole page. It filters every table at once, stays pinned to
+ * the top, and owns the keyboard: any printable key pressed while focus is not in
+ * another field lands here, so you can just start typing a ticker. Esc clears it.
+ */
+function StockSearch ({ value, onChange }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    ref.current?.focus()
+    const onKey = e => {
+      const el = ref.current
+      if (!el || e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return
+      const t = e.target
+      if (t === el || t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return
+      if (e.key.length === 1 && e.key !== ' ') el.focus()   // the keystroke then types into it
+      else if (e.key === 'Escape') onChange('')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onChange])
+
+  return (
+    <div className="search">
+      <span className="search-icon" aria-hidden="true">⌕</span>
+      <input ref={ref} type="search" value={value} placeholder="Search stock — just start typing"
+             aria-label="Search stock (filters every table)" spellCheck={false} autoComplete="off"
+             onChange={e => onChange(e.target.value.toUpperCase())}
+             onKeyDown={e => { if (e.key === 'Escape') onChange('') }} />
+      {value && <button type="button" className="search-clear" onClick={() => { onChange(''); ref.current?.focus() }}
+                        aria-label="Clear search">×</button>}
+    </div>
+  )
+}
+
 export default function App () {
   const [midrun, setMidrun] = useState(false)
+  const [query, setQuery] = useState('')
   const db = midrun ? 'eod' : 'rg'
   const [summary, setSummary] = useState(null)
   const [tickers, setTickers] = useState([])
@@ -71,6 +106,7 @@ export default function App () {
   }, [costBps, db])
 
   const toggle = <MidrunToggle on={midrun} onChange={setMidrun} />
+  const search = <StockSearch value={query} onChange={setQuery} />
 
   if (err) {
     return (
@@ -102,6 +138,7 @@ export default function App () {
   return (
     <div className="wrap">
       {toggle}
+      {search}
       {stale && (
         <div className="card" style={{
           borderColor: 'var(--critical)', background: 'transparent', marginBottom: 18,
@@ -139,7 +176,7 @@ export default function App () {
         ) : (
           <p className="note">Live paper trade — no answer exists yet. It gets graded on the next run.</p>
         )}
-        <NextSession data={next} midrun={midrun} />
+        <NextSession data={next} midrun={midrun} query={query} />
       </div>
 
       <div className="kpis">
@@ -206,7 +243,7 @@ export default function App () {
           that same stock — and <strong>edge</strong> is the difference. Click any header to sort;
           hover a header for what it means.
         </p>
-        <TickerTable rows={tickers} />
+        <TickerTable rows={tickers} query={query} />
       </div>
 
       {summary.liveOnly?.n > 0 && (
@@ -259,7 +296,7 @@ export default function App () {
             came first, so the <strong>stop</strong> is taken; that keeps the tight stops honest
             rather than flattered.
           </p>
-          <StopLoss key={db} data={strategy} db={db} />
+          <StopLoss key={db} data={strategy} db={db} query={query} />
         </div>
       )}
     </div>

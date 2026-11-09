@@ -164,3 +164,32 @@ button.switch[aria-checked="true"] { border-color: var(--series-1); }
 button.switch[aria-checked="true"] .knob { background: var(--series-1); }
 button.switch[aria-checked="true"] .knob::after { transform: translateX(14px); }
 button.switch:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+
+/* The one ticker search. Pinned to the top and always drawn in the accent colour, so it
+   reads as where typing goes; it filters every table on the page. */
+.search {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 -20px 18px; padding: 10px 20px;
+  background: var(--plane);
+}
+.search input {
+  flex: 1; min-width: 0;
+  font: inherit; font-size: 15px; font-weight: 520; letter-spacing: 0.02em;
+  padding: 10px 40px 10px 38px; border-radius: 999px;
+  color: var(--text-primary); background: var(--surface-1);
+  border: 2px solid var(--series-1);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--series-1) 18%, transparent);
+  outline: none;
+}
+.search input::placeholder { color: var(--text-muted); font-weight: 400; letter-spacing: 0; }
+.search input::-webkit-search-cancel-button { display: none; }
+.search input:focus { box-shadow: 0 0 0 5px color-mix(in srgb, var(--series-1) 30%, transparent); }
+.search-icon { position: absolute; left: 36px; font-size: 18px; color: var(--series-1); pointer-events: none; }
+.search-clear {
+  position: absolute; right: 30px;
+  font: inherit; font-size: 18px; line-height: 1; cursor: pointer;
+  width: 26px; height: 26px; border-radius: 999px; border: 0;
+  color: var(--text-secondary); background: transparent;
+}
+.search-clear:hover { background: var(--mid); color: var(--text-primary); }

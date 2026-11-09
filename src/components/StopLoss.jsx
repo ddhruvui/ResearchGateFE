@@ -19,11 +19,10 @@ const REASON = {
  * chart is fetched per stock on demand because each one carries ~1,400 daily
  * balances per level and the list endpoint deliberately omits them.
  */
-export default function StopLoss ({ data, db = 'rg' }) {
+export default function StopLoss ({ data, db = 'rg', query = '' }) {
   const stops = (data.stops || []).map(s => s.toFixed(2))
   const [sel, setSel] = useState(stops[1] || stops[0])
   const [sort, setSort] = useState({ key: `end_${stops[1] || stops[0]}`, dir: 'desc' })
-  const [q, setQ] = useState('')
   const [open, setOpen] = useState(null)
   const [detail, setDetail] = useState({})
 
@@ -37,7 +36,7 @@ export default function StopLoss ({ data, db = 'rg' }) {
   }, [open, detail, db])
 
   const rows = useMemo(() => {
-    const f = q.trim().toUpperCase()
+    const f = query.trim().toUpperCase()
     const out = (data.rows || [])
       .filter(r => !f || r.ticker.includes(f))
       .map(r => {
@@ -74,7 +73,7 @@ export default function StopLoss ({ data, db = 'rg' }) {
       if (typeof x === 'string') return sign * x.localeCompare(y)
       return sign * (x - y)
     })
-  }, [data.rows, sel, sort, q, stops])
+  }, [data.rows, sel, sort, query, stops])
 
   const roll = data.rollup?.byStop?.[sel]
   const start = data.startCapital ?? 10000
@@ -99,12 +98,6 @@ export default function StopLoss ({ data, db = 'rg' }) {
           </button>
         ))}
         <span style={{ flex: 1 }} />
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Filter ticker…"
-               style={{
-                 font: 'inherit', fontSize: 13, padding: '6px 10px', borderRadius: 7,
-                 border: '1px solid var(--border)', background: 'transparent',
-                 color: 'var(--text-primary)', width: 130,
-               }} />
       </div>
 
       {roll && (

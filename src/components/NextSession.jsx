@@ -14,9 +14,8 @@ import TickerLink from './TickerLink.jsx'
  * only once asked for, and every press re-fetches rather than reusing what is
  * already on screen.
  */
-export default function NextSession ({ data, midrun = false }) {
+export default function NextSession ({ data, midrun = false, query = '' }) {
   const [sort, setSort] = useState({ key: 'pred', dir: 'desc' })
-  const [q, setQ] = useState('')
   const [dir, setDir] = useState('all')
   const [live, setLive] = useState(null)      // null = never asked = no column
   const [busy, setBusy] = useState(false)
@@ -40,7 +39,7 @@ export default function NextSession ({ data, midrun = false }) {
   }
 
   const view = useMemo(() => {
-    const f = q.trim().toUpperCase()
+    const f = query.trim().toUpperCase()
     let out = rows.filter(r => !f || r.ticker.includes(f))
     if (dir === 'up') out = out.filter(r => r.pred > 0)
     if (dir === 'down') out = out.filter(r => r.pred <= 0)
@@ -57,7 +56,7 @@ export default function NextSession ({ data, midrun = false }) {
       if (bv == null) return -1
       return sign * (typeof av === 'string' ? av.localeCompare(bv) : av - bv)
     })
-  }, [rows, q, dir, sort, live])
+  }, [rows, query, dir, sort, live])
 
   if (!rows.length) {
     if (midrun) {
@@ -93,12 +92,6 @@ export default function NextSession ({ data, midrun = false }) {
                 title="Fetch the current price for every name from EODHD">
           {busy ? 'Fetching…' : live ? 'Refresh price' : 'Get live price'}
         </button>
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Filter ticker…"
-               style={{
-                 font: 'inherit', fontSize: 13, padding: '6px 10px', borderRadius: 7,
-                 border: '1px solid var(--border)', background: 'transparent',
-                 color: 'var(--text-primary)', width: 130,
-               }} />
         {['all', 'up', 'down'].map(d => (
           <button key={d} className="seg" aria-pressed={dir === d} onClick={() => setDir(d)}>{d}</button>
         ))}

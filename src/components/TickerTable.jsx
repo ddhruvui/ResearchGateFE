@@ -4,18 +4,17 @@ import TickerLink from './TickerLink.jsx'
 /** The table view — 100 names is past every chart's series ceiling, and a table
  *  also satisfies the accessibility requirement that identity never depends on
  *  colour alone. */
-export default function TickerTable ({ rows }) {
+export default function TickerTable ({ rows, query = '' }) {
   const [sort, setSort] = useState({ key: 'edge', dir: 'desc' })
-  const [q, setQ] = useState('')
   const [onlyBeat, setOnlyBeat] = useState(false)
 
   const view = useMemo(() => {
-    const f = q.trim().toUpperCase()
+    const f = query.trim().toUpperCase()
     const out = rows.filter(r => (!f || r.ticker.includes(f)) && (!onlyBeat || r.edge > 0))
     const { key, dir } = sort
     return out.sort((a, b) => (dir === 'asc' ? 1 : -1) *
       (typeof a[key] === 'string' ? a[key].localeCompare(b[key]) : a[key] - b[key]))
-  }, [rows, sort, q, onlyBeat])
+  }, [rows, sort, query, onlyBeat])
 
   const beat = rows.filter(r => r.edge > 0).length
   const th = (key, label, help) => (
@@ -28,11 +27,6 @@ export default function TickerTable ({ rows }) {
   return (
     <>
       <div className="controls">
-        <input value={q} onChange={e => setQ(e.target.value)} placeholder="Filter ticker…"
-               style={{
-                 font: 'inherit', fontSize: 13, padding: '6px 10px', borderRadius: 7,
-                 border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-primary)',
-               }} />
         <span style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>
           {beat} of {rows.length} beat the baseline
         </span>
