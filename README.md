@@ -27,7 +27,7 @@ The tests render the whole app in jsdom against fixtures cut from a real API
 snapshot (`src/test/fixtures`), with `fetch` mocked, so no API needs to be running.
 They cover the global search and spotlight, the Midrun switch, per-section loading
 and errors, the stale banner, sorting and filters, live prices, the stop-loss
-table and the theme control.
+table, the 2-week swing table and the theme control.
 
 ## Build
 
@@ -69,6 +69,12 @@ section bar pinned to the top:
 - **Edge by year**, the **per-stock table**, the **live track record**
   (predictions made in advance and graded the next day), and the **$10,000
   stop-loss paper trade** with a chart per stock.
+- **How far each stock swings in 2 weeks** — every stock's latest 10-session
+  high-to-low against every 10-session window in its own past year (or since
+  2021): a box-and-whisker strip per row on one shared scale, sorted by how
+  unusual the latest window is, and a histogram per stock that names the likely
+  swing in words. It comes from the price bars alone (`/api/ranges`), so it is
+  the same under Midrun, and the section is simply absent until it is published.
 - **Search** — type a ticker anywhere (or press `/` or ⌘K); every table filters,
   and a single match opens a spotlight card with that stock's call, record and
   stop-loss result.

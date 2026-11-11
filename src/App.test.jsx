@@ -21,6 +21,7 @@ async function setup (overrides) {
     expect(rowsIn('tomorrow')).toHaveLength(151)
     expect(rowsIn('stocks')).toHaveLength(151)
     expect(rowsIn('stop-loss')).toHaveLength(6)
+    expect(rowsIn('range')).toHaveLength(6)
   })
   return { api, user }
 }
@@ -32,10 +33,10 @@ describe('page structure', () => {
   it('puts tomorrow first and lists every section in the section bar (T21)', async () => {
     await setup()
     const ids = [...document.querySelectorAll('main section.sec')].map(s => s.id)
-    expect(ids).toEqual(['tomorrow', 'scorecard', 'returns', 'by-year', 'stocks', 'live', 'stop-loss'])
+    expect(ids).toEqual(['tomorrow', 'scorecard', 'returns', 'by-year', 'stocks', 'live', 'range', 'stop-loss'])
     const nav = screen.getByRole('navigation', { name: 'Dashboard sections' })
     expect(within(nav).getAllByRole('link').map(a => a.textContent))
-      .toEqual(['Tomorrow', 'Scorecard', 'Returns', 'By year', 'Stocks', 'Live record', 'Stop loss'])
+      .toEqual(['Tomorrow', 'Scorecard', 'Returns', 'By year', 'Stocks', 'Live record', '2-week swing', 'Stop loss'])
   })
 
   it('jumps to a section from the section bar and marks it current (T21)', async () => {
@@ -67,6 +68,7 @@ describe('search', () => {
     expect(tickersIn('tomorrow')).toEqual(['AMD'])
     expect(tickersIn('stocks')).toEqual(['AMD'])
     expect(tickersIn('stop-loss')).toEqual(['AMD'])
+    expect(tickersIn('range')).toEqual(['AMD'])
   })
 
   it('clears with Esc and with the clear button, which keeps focus (T02)', async () => {
@@ -323,6 +325,64 @@ describe('tables', () => {
     expect(open).toHaveBeenCalledWith('https://www.google.com/search?q=AAPL%20stock', '_blank')
     expect(win.opener).toBeNull()
     expect(s.getByRole('button', { name: 'Show the chart for AAPL' })).toHaveAttribute('aria-expanded', 'false')
+  })
+})
+
+describe('2-week swing', () => {
+  const cell = (ticker, col) => {
+    const row = rowsIn('range').find(r => within(r).getAllByRole('link')[0].textContent === ticker)
+    const i = [...tableIn('range').querySelectorAll('thead th')].findIndex(th => th.textContent.startsWith(col))
+    return row.querySelectorAll('td')[i]
+  }
+
+  it('ranks by how unusual the latest 10 sessions are, against either period (T31)', async () => {
+    const { user } = await setup()
+    const s = within(section('range'))
+    expect(tickersIn('range')).toEqual(['NVDA', 'AMD', 'AXP', 'MRNA', 'AAPL', 'AAL'])
+    expect(tableIn('range').querySelector('th[aria-sort="descending"]')).toHaveTextContent('Wider than')
+    expect(s.getByRole('heading', { level: 2 })).toHaveTextContent('How far each stock swings in 2 weeks · to Nov 10')
+    expect(section('range').querySelector('.sec-head p')).toHaveTextContent('2 of 6 are swinging wider than 9 in 10 of their windows in the past year')
+    expect(cell('AAPL', 'Half the time')).toHaveTextContent('5.4–9.3%')
+    expect(cell('AAPL', 'Latest')).toHaveTextContent('9.2%')
+    expect(cell('NVDA', 'Wider than').querySelector('.pill')).toHaveTextContent('99%')
+
+    await user.click(s.getByRole('button', { name: 'Since 2021' }))
+    expect(tickersIn('range')).toEqual(['AMD', 'NVDA', 'MRNA', 'AAL', 'AXP', 'AAPL'])
+    expect(cell('AAPL', 'Half the time')).toHaveTextContent('5.7–10.4%')
+    expect(section('range').querySelector('.sec-head p')).toHaveTextContent('of their windows since 2021')
+  })
+
+  it('opens a stock with the likely swing in words and in numbers (T32)', async () => {
+    const { user } = await setup()
+    const s = within(section('range'))
+    await user.click(s.getByRole('button', { name: 'Show the swing chart for AAPL' }))
+    const verdict = section('range').querySelector('.range-verdict')
+    expect(verdict).toHaveTextContent(
+      'Half of AAPL’s 10-session windows in the past year swung 5.4–9.3% from low to high, and 9 in 10 stayed under 11.4%.')
+    expect(verdict).toHaveTextContent('The latest 10 sessions (Oct 28 – Nov 10) swung 9.2%, wider than 73% of them.')
+    expect(s.getByText('8 times in 10', { selector: '.tile .l' }).closest('.tile')).toHaveTextContent('4.7–11.4%')
+    expect(s.getByText('Oct 28 – Nov 10', { selector: '.tile .l' }).closest('.tile')).toHaveTextContent('low 325.33 Nov 3 · high 355.38 Nov 5')
+
+    await user.click(s.getByRole('button', { name: 'Hide the swing chart for AAPL' }))
+    await user.click(s.getByRole('button', { name: 'Show the swing chart for NVDA' }))
+    expect(section('range').querySelector('.range-verdict')).toHaveTextContent('swung 32.6%, the widest of them.')
+  })
+
+  it('leaves the section out when none is published, and keeps the rest (T33)', async () => {
+    mockApi({ '/api/ranges': () => ({ status: 404, body: { error: 'no 2-week swing table published' } }) })
+    render(<App />)
+    await waitFor(() => expect(rowsIn('stop-loss')).toHaveLength(6))
+    expect(section('range')).toBeNull()
+    const nav = screen.getByRole('navigation', { name: 'Dashboard sections' })
+    expect(within(nav).queryByRole('link', { name: '2-week swing' })).not.toBeInTheDocument()
+  })
+
+  it('shows the same table under Midrun and never asks ResearchGateEOD for it (T34)', async () => {
+    const { api, user } = await setup()
+    await user.click(screen.getByRole('button', { name: 'Midrun' }))
+    await waitFor(() => expect(api.calls).toContain('/api/summary?db=eod'))
+    expect(rowsIn('range')).toHaveLength(6)
+    expect(api.calls.filter(c => c.startsWith('/api/ranges'))).toEqual(['/api/ranges'])
   })
 })
 

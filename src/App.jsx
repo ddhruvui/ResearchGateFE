@@ -8,6 +8,7 @@ import Spotlight from './components/Spotlight.jsx'
 import NextSession from './components/NextSession.jsx'
 import TickerTable from './components/TickerTable.jsx'
 import StopLoss, { stopKeys } from './components/StopLoss.jsx'
+import Ranges from './components/Ranges.jsx'
 import { ByYear, LiveRecord, Returns, Scorecard } from './components/Sections.jsx'
 
 /**
@@ -37,6 +38,10 @@ export default function App () {
   // Optional: a run published before src.strategy existed has no stop-loss data.
   // That is not a dashboard failure, so the section simply doesn't appear.
   const strategy = useResource(withDb('/api/strategy', db))
+  // The 2-week swing comes from the price bars alone, so it is the same table under
+  // Midrun and is never asked of ResearchGateEOD. Optional like the stop loss: a run
+  // published before src.ranges existed simply has no such section.
+  const ranges = useResource('/api/ranges')
 
   const stops = stopKeys(strategy.data)
   const stop = stops.includes(stopPick) ? stopPick : (stops[1] || stops[0] || null)
@@ -67,6 +72,7 @@ export default function App () {
 
   const hasLive = summary.data?.liveOnly?.n > 0
   const hasStop = strategy.data?.rows?.length > 0
+  const hasRange = ranges.data?.rows?.length > 0
   const sections = [
     { id: 'tomorrow', label: 'Tomorrow' },
     { id: 'scorecard', label: 'Scorecard' },
@@ -74,6 +80,7 @@ export default function App () {
     { id: 'by-year', label: 'By year' },
     { id: 'stocks', label: 'Stocks' },
     ...(hasLive ? [{ id: 'live', label: 'Live record' }] : []),
+    ...(hasRange ? [{ id: 'range', label: '2-week swing' }] : []),
     ...(hasStop ? [{ id: 'stop-loss', label: 'Stop loss' }] : []),
   ]
 
@@ -110,6 +117,8 @@ export default function App () {
           : <TickerTable rows={tickers.data} loading={tickers.loading && !tickers.data} query={query} onClearQuery={clearQuery} />}
 
         <LiveRecord summary={summary.data} />
+
+        {hasRange && <Ranges data={ranges.data} query={query} onClearQuery={clearQuery} />}
 
         {hasStop && (
           <StopLoss key={db} data={strategy.data} db={db} sel={stop} onSel={setStopPick}

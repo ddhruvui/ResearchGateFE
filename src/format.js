@@ -46,3 +46,7 @@ export const timeET = iso => {
   if (Number.isNaN(d.getTime())) return '—'
   return `${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' })} ET`
 }
+
+/** A span of two rates, one percent sign: (0.06, 0.091) → "6.0–9.1%". */
+export const pctSpan = (a, b, dp = 1) =>
+  (ok(a) && ok(b) ? `${(a * 100).toFixed(dp)}–${(b * 100).toFixed(dp)}%` : '—')

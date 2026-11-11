@@ -7,8 +7,9 @@ import equity0 from './fixtures/equity-0.json'
 import equity10 from './fixtures/equity-10.json'
 import strategy from './fixtures/strategy.json'
 import strategyAAPL from './fixtures/strategy-AAPL.json'
+import ranges from './fixtures/ranges.json'
 
-export const fixtures = { summary, tickers, nextSession, midrun, equity0, equity10, strategy, strategyAAPL }
+export const fixtures = { summary, tickers, nextSession, midrun, equity0, equity10, strategy, strategyAAPL, ranges }
 
 const ok = body => ({ status: 200, body })
 const eod = (u, body) => (u.searchParams.get('db') === 'eod' ? { ...body, db: 'ResearchGateEOD' } : body)
@@ -22,6 +23,7 @@ const ROUTES = {
   '/api/equity': u => ok(u.searchParams.get('costBps') === '10' ? equity10 : equity0),
   '/api/strategy': () => ok(strategy),
   '/api/strategy/AAPL': () => ok(strategyAAPL),
+  '/api/ranges': () => ok(ranges),
   '/api/live-price': () => ok({
     fetchedAt: '2026-11-09T17:30:00Z', fromStream: 2, missing: [],
     quotes: {
