@@ -10,20 +10,27 @@ import { ChangePill, Disclosure, EmptyRow, Section, Segmented, Skeleton, SortHea
  * it was computed from and the level the model implies, so the number can be checked
  * against a quote screen tomorrow.
  *
- * The live price column is opt-in. Each press opens a real-time EODHD socket and
- * rotates the universe through it, so it costs a few seconds and real quota; an
- * always-on quote would also be wrong more often than right, since the panel is
- * usually read long after the print it would show. So it appears only once asked
- * for, and every press re-fetches rather than reusing what is already on screen.
+ * The price column starts as **Last**: the LastPrice upload (`last`, from
+ * /api/last-price), Yahoo's latest trade every 10 minutes. When it was uploaded is on
+ * the page's top line (Hero) and in the column's tooltip. Pressing the button swaps it to **Live**. Each press opens a real-time
+ * EODHD socket and rotates the universe through it, so it costs a few seconds and
+ * real quota; it happens only when asked for, and every press re-fetches rather than
+ * reusing what is already on screen. A name the press got no quote for keeps its
+ * last uploaded price, greyed out.
  */
-export default function NextSession ({ data, loading, midrun = false, query = '', onClearQuery }) {
+export default function NextSession ({ data, loading, midrun = false, last = null, lastError = null, query = '', onClearQuery }) {
   const [sort, onSort] = useSort({ key: 'pred', dir: 'desc' })
   const [dir, setDir] = useState('all')
-  const [live, setLive] = useState(null)      // null = never asked = no column
+  const [live, setLive] = useState(null)      // null = never asked: the column shows Last
   const [busy, setBusy] = useState(false)
   const [liveErr, setLiveErr] = useState(null)
 
   const rows = useMemo(() => data?.rows ?? [], [data])
+  const lastPrices = useMemo(() => last?.prices ?? {}, [last])
+  const hasLast = Object.keys(lastPrices).length > 0
+  // Last is coloured against the official close the prediction started from.
+  const baseKey = midrun ? 'officialClose' : 'lastClose'
+  const baseDate = midrun ? data?.officialAsOf : data?.asOf
 
   async function getLive () {
     setBusy(true)
@@ -34,7 +41,7 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
       setLive(await fresh(`/api/live-price?tickers=${encodeURIComponent(tickers)}`))
     } catch (e) {
       setLiveErr(e.message)
-      setLive(null)                            // a failed press leaves no half-column
+      setLive(null)                            // a failed press goes back to Last, never a half-column
     } finally {
       setBusy(false)
     }
@@ -44,10 +51,15 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
     let out = rows.filter(r => matchesQuery(r.ticker, query))
     if (dir === 'up') out = out.filter(r => r.pred > 0)
     if (dir === 'down') out = out.filter(r => r.pred <= 0)
-    // Merge the quote in so the column sorts like any other.
-    out = out.map(r => ({ ...r, quote: live?.quotes?.[r.ticker] ?? null, livePrice: live?.quotes?.[r.ticker]?.price ?? null }))
+    // Merge the prices in so the column sorts like any other: live where it came back,
+    // the last upload otherwise.
+    out = out.map(r => {
+      const quote = live?.quotes?.[r.ticker] ?? null
+      const lastPrice = lastPrices[r.ticker] ?? null
+      return { ...r, quote, lastPrice, price: quote?.price ?? lastPrice }
+    })
     return sortRows(out, sort)
-  }, [rows, query, dir, sort, live])
+  }, [rows, query, dir, sort, live, lastPrices])
 
   const up = data?.up ?? rows.filter(r => r.pred > 0).length
   const down = data?.down ?? rows.length - up
@@ -83,7 +95,10 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
       </button>
     </>
   )
-  const cols = 4 + (midrun ? 1 : 0) + (live ? 1 : 0)
+  const showPrice = !!live || hasLast
+  const cols = 4 + (midrun ? 1 : 0) + (showPrice ? 1 : 0)
+  const uploaded = last?.uploadedAt ? new Date(last.uploadedAt).toLocaleString() : 'time unknown'
+  const missingLive = live?.missing ?? []
 
   return (
     <Section id="tomorrow" title={title} sub={sub} tools={tools} first>
@@ -99,8 +114,12 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
         <p className="note" style={{ margin: '0 0 12px' }}>
           Priced {quoteStamp(live)} · fetched {new Date(live.fetchedAt).toLocaleTimeString()}
           {' · '}{live.fromStream}/{Object.keys(live.quotes || {}).length} off the real-time tape
-          {live.missing?.length > 0 && ` · no quote for ${live.missing.join(', ')}`}
+          {missingLive.length > 0 && ` · no quote for ${missingLive.join(', ')}`}
+          {missingLive.some(t => lastPrices[t] != null) && ' (last uploaded price shown)'}
         </p>
+      )}
+      {!live && !hasLast && lastError && (
+        <p className="note muted" style={{ margin: '0 0 12px' }}>Last prices unavailable: {lastError}</p>
       )}
 
       <div className="tw">
@@ -115,7 +134,12 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
                 {midrun ? `IB ${dateShort(data.asOf)}` : `Close ${dateShort(data.asOf)}`}
               </SortHeader>
               <SortHeader sort={sort} onSort={onSort} k="impliedClose" title="Close the model implies for the next session">Expected</SortHeader>
-              {live && <SortHeader sort={sort} onSort={onSort} k="livePrice" title="Latest EODHD trade print when you pressed the button">Live</SortHeader>}
+              {showPrice && (
+                <SortHeader sort={sort} onSort={onSort} k="price"
+                            title={live ? 'Latest EODHD trade print when you pressed the button' : `Latest uploaded price, ${uploaded}`}>
+                  {live ? 'Live' : 'Last'}
+                </SortHeader>
+              )}
               <SortHeader sort={sort} onSort={onSort} k="pred" title="Predicted move from the close">Change</SortHeader>
             </tr>
           </thead>
@@ -128,12 +152,14 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
                   {midrun && <td className="opt">{num(r.officialClose)}</td>}
                   <td className="opt">{num(r.lastClose)}</td>
                   <td className="strong">{num(r.impliedClose)}</td>
-                  {live && (
-                    <td className={r.quote?.change == null ? '' : r.quote.change >= 0 ? 'up-t' : 'down-t'}
-                        title={r.quote ? quoteTitle(r.quote) : 'No quote returned for this name'}>
-                      {r.quote ? num(r.quote.price) : '—'}
-                    </td>
-                  )}
+                  {showPrice && (live && r.quote
+                    ? (
+                      <td className={r.quote.change == null ? '' : r.quote.change >= 0 ? 'up-t' : 'down-t'}
+                          title={quoteTitle(r.quote)}>
+                        {num(r.quote.price)}
+                      </td>
+                    )
+                    : <LastCell price={r.lastPrice} base={r[baseKey]} baseDate={baseDate} uploaded={uploaded} live={!!live} />)}
                   <td>
                     <span className="abs">{signed(diff)}</span>
                     <ChangePill value={r.pred} text={spct(r.pred)} />
@@ -154,14 +180,36 @@ export default function NextSession ({ data, loading, midrun = false, query = ''
           {data.midrunAsOf && <> at <strong>{new Date(data.midrunAsOf).toLocaleString()}</strong></>} were
           today&rsquo;s close: the official model, fed today&rsquo;s partial bar. Not graded; tonight&rsquo;s
           run makes the official prediction from the real close.</p>}
+        {!live && hasLast && <p><strong>Last</strong> is the latest trade Yahoo reported when prices were
+          last uploaded: every 10 minutes from Sunday 8 pm to Friday 8 pm New York time, pre-market and
+          after-hours included. Colour is the move against the {baseDate ? dateShort(baseDate) : 'official'} close;
+          hover a price for both. Press <strong>Get live price</strong> for EODHD&rsquo;s tape right now.</p>}
         {live && <p><strong>Live</strong> is the last trade EODHD reported at the moment you asked, taken
           from its real-time socket where a print arrived and from the REST snapshot otherwise (hover any
           price to see which, and the session it traded in). Colour is the move against the previous close.
-          Outside market hours this is the most recent extended-hours or closing print. It is a sanity check
-          against the expected level, not a fill price.</p>}
+          Outside market hours this is the most recent extended-hours or closing print. A name with no live
+          quote keeps its last uploaded price, greyed out. It is a sanity check against the expected level,
+          not a fill price.</p>}
       </Disclosure>
     </Section>
   )
+}
+
+/**
+ * A price from the LastPrice upload. Coloured against the close the prediction started
+ * from; greyed out when it stands in for a live quote that never came back.
+ */
+function LastCell ({ price, base, baseDate, uploaded, live }) {
+  if (price == null) {
+    return <td title={live ? 'No live quote and no uploaded price for this name' : 'No uploaded price for this name'}>—</td>
+  }
+  const chg = Number.isFinite(base) && base > 0 ? price - base : null
+  const tone = live ? 'muted' : chg == null ? '' : chg >= 0 ? 'up-t' : 'down-t'
+  const title = [
+    live ? `No live quote: last uploaded price, ${uploaded}` : `Uploaded ${uploaded}`,
+    chg != null ? `Change since the ${baseDate ? dateShort(baseDate) : 'official'} close ${signed(chg)} (${spct(chg / base)})` : null,
+  ].filter(Boolean).join(' · ')
+  return <td className={tone} title={title}>{num(price)}</td>
 }
 
 /** The exchange timestamp the quotes carry, which is not when we fetched them. */

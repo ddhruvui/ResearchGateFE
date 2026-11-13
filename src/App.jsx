@@ -42,6 +42,10 @@ export default function App () {
   // Midrun and is never asked of ResearchGateEOD. Optional like the stop loss: a run
   // published before src.ranges existed simply has no such section.
   const ranges = useResource('/api/ranges')
+  // Every ticker's last uploaded price, for the price column on "Tomorrow". Not tied to
+  // a database or run, so Midrun shows the same prices. Optional: without it the
+  // column simply waits for "Get live price".
+  const lastPrice = useResource('/api/last-price')
 
   const stops = stopKeys(strategy.data)
   const stop = stops.includes(stopPick) ? stopPick : (stops[1] || stops[0] || null)
@@ -93,7 +97,7 @@ export default function App () {
       </div>
 
       <main className="wrap">
-        <Hero summary={summary.data} error={summary.error} midrun={midrun} />
+        <Hero summary={summary.data} error={summary.error} midrun={midrun} lastPriceAt={lastPrice.data?.uploadedAt} />
 
         {spot && (
           <Spotlight ticker={spot} next={next.data} midrun={midrun}
@@ -103,7 +107,8 @@ export default function App () {
         )}
 
         <NextSession key={midrun ? 'midrun' : 'official'} data={next.error ? { rows: [], error: next.error } : next.data}
-                     loading={next.loading} midrun={midrun} query={query} onClearQuery={clearQuery} />
+                     loading={next.loading} midrun={midrun} last={lastPrice.data} lastError={lastPrice.error}
+                     query={query} onClearQuery={clearQuery} />
 
         <Scorecard summary={summary.data} error={summary.error} onRetry={summary.retry} />
         <Returns equity={equity} costBps={costBps} onCost={setCostBps} />

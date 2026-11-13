@@ -60,8 +60,12 @@ Every push to `main` redeploys. Changing `VITE_API_BASE` needs a redeploy.
 One page, answer first, with the app bar (search, Official/Midrun, theme) and a
 section bar pinned to the top:
 
-- **Tomorrow's prediction** — every stock's call for the next session, with an
-  opt-in live price column.
+- **Tomorrow's prediction** — every stock's call for the next session, with a
+  price column. It starts as **Last**: the latest uploaded price from the
+  `LastPrice` database (`/api/last-price`, refreshed every 10 minutes), coloured
+  against the close the prediction started from. **Get live price** swaps it to
+  **Live**, EODHD's tape right now; a name with no live quote keeps its last
+  uploaded price, greyed out.
 - **Scorecard** — the verdict as a sentence, then direction accuracy vs the
   always-up baseline. The edge is the number that matters; the accuracy alone is not.
 - **Returns** — $1 per stock following the model vs buy & hold, with a

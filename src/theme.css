@@ -196,6 +196,7 @@ h1, h2, h3 { text-wrap: balance; }
 .status .fresh::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--up); box-shadow: 0 0 0 3px var(--up-soft); }
 .status .fresh.stale::before { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-soft); }
 .status .src { color: var(--amber); font-weight: 500; }
+.status .last-price { color: var(--ink); font-weight: 500; }
 
 .banner { display: grid; gap: 4px; margin-top: 10px; padding: 12px 14px; border-radius: 10px; font-size: 13px; }
 .banner b { font-size: 13.5px; }

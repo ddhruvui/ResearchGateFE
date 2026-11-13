@@ -24,6 +24,10 @@ const ROUTES = {
   '/api/strategy': () => ok(strategy),
   '/api/strategy/AAPL': () => ok(strategyAAPL),
   '/api/ranges': () => ok(ranges),
+  '/api/last-price': () => ok({
+    db: 'LastPrice', uploadedAt: '2026-11-09T17:20:00.000Z',
+    prices: { AMD: 455.5, AAPL: 340.0, MSFT: 531.25 },
+  }),
   '/api/live-price': () => ok({
     fetchedAt: '2026-11-09T17:30:00Z', fromStream: 2, missing: [],
     quotes: {

@@ -153,6 +153,10 @@ describe('data source and loading', () => {
     ]))
     expect(screen.getByText('Midrun: reading ResearchGateEOD')).toBeInTheDocument()
     expect(within(tableIn('tomorrow')).getByRole('button', { name: /Close Nov 6/ })).toBeInTheDocument()
+    // Same last prices under Midrun, coloured against the official close, not IB's.
+    expect(within(section('tomorrow')).getByText('455.50'))
+      .toHaveAttribute('title', expect.stringContaining('Change since the Nov 6 close +6.46'))
+    expect(api.calls).not.toContain('/api/last-price?db=eod')
 
     api.calls.length = 0
     await user.click(screen.getByRole('button', { name: 'Official' }))
@@ -277,7 +281,25 @@ describe('tables', () => {
     expect(rowsIn('stocks').every(r => r.textContent.includes('+'))).toBe(true)
   })
 
-  it('adds a live price column on request, and none on failure (T18)', async () => {
+  it('shows the last uploaded price, coloured against the close (T18)', async () => {
+    await setup()
+    const t = within(section('tomorrow'))
+    expect(t.getByRole('button', { name: /^Last/ })).toBeInTheDocument()
+    expect(t.queryByRole('button', { name: /^Live/ })).not.toBeInTheDocument()
+    // When the prices were uploaded sits on the page's top line, next to Published.
+    const hero = document.querySelector('.hero')
+    expect(within(hero).getByText(/^Last price updated \w{3}, Nov 9, /)).toBeInTheDocument()
+    expect(t.queryByText(/Last price updated/)).not.toBeInTheDocument()
+    const amd = t.getByText('455.50')
+    expect(amd).toHaveClass('up-t')
+    expect(amd).toHaveAttribute('title', expect.stringContaining('Change since the Nov 6 close +6.46 (+1.44%)'))
+    expect(t.getByText('340.00')).toHaveClass('down-t')
+    // No upload for this name: a dash, not a zero.
+    expect(within(rowsIn('tomorrow').find(r => r.textContent.startsWith('NVDA'))).getByTitle('No uploaded price for this name'))
+      .toHaveTextContent('—')
+  })
+
+  it('swaps in live prices on request, keeps Last on failure (T18)', async () => {
     const gate = deferred()
     const { user } = await setup({ '/api/live-price': () => gate.promise })
     const t = within(section('tomorrow'))
@@ -286,6 +308,8 @@ describe('tables', () => {
     await act(async () => { gate.resolve({ status: 503, body: { error: 'socket closed' } }) })
     expect(await t.findByText(/Could not fetch live prices/)).toBeInTheDocument()
     expect(t.queryByRole('button', { name: /^Live/ })).not.toBeInTheDocument()
+    expect(t.getByRole('button', { name: /^Last/ })).toBeInTheDocument()
+    expect(t.getByText('455.50')).toBeInTheDocument()
 
     vi.mocked(fetch).mockImplementationOnce(async () => new Response(JSON.stringify({
       fetchedAt: '2026-11-09T17:30:00Z', fromStream: 1, missing: ['MSFT'],
@@ -293,9 +317,26 @@ describe('tables', () => {
     }), { status: 200 }))
     await user.click(t.getByRole('button', { name: 'Get live price' }))
     expect(await t.findByRole('button', { name: /^Live/ })).toBeInTheDocument()
-    expect(t.getByText('451.20')).toBeInTheDocument()
-    expect(t.getByText(/no quote for MSFT/)).toBeInTheDocument()
+    expect(t.queryByRole('button', { name: /^Last/ })).not.toBeInTheDocument()
+    expect(t.getByText('451.20')).toHaveClass('up-t')
+    expect(t.queryByText('455.50')).not.toBeInTheDocument()
+    expect(t.getByText(/no quote for MSFT \(last uploaded price shown\)/)).toBeInTheDocument()
+    // MSFT got no live quote: its last uploaded price stands in, greyed out.
+    const msft = t.getByText('531.25')
+    expect(msft).toHaveClass('muted')
+    expect(msft).toHaveAttribute('title', expect.stringMatching(/^No live quote: last uploaded price/))
     expect(t.getByRole('button', { name: 'Refresh price' })).toBeInTheDocument()
+  })
+
+  it('has no price column until asked when the last prices fail (T18)', async () => {
+    const { user } = await setup({ '/api/last-price': () => ({ status: 500, body: { error: 'Atlas unreachable' } }) })
+    const t = within(section('tomorrow'))
+    expect(await t.findByText(/Last prices unavailable: 500/)).toBeInTheDocument()
+    expect(t.queryByRole('button', { name: /^Last/ })).not.toBeInTheDocument()
+    await user.click(t.getByRole('button', { name: 'Get live price' }))
+    expect(await t.findByRole('button', { name: /^Live/ })).toBeInTheDocument()
+    expect(t.getByText('451.20')).toBeInTheDocument()
+    expect(t.queryByText(/Last prices unavailable/)).not.toBeInTheDocument()
   })
 
   it('follows the stop level and loads a stock chart once (T19)', async () => {

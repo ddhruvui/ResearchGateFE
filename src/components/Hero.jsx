@@ -3,9 +3,18 @@ import { dateYear } from '../format.js'
 
 export const STALE_AFTER_DAYS = 5   // a daily run that skips a long weekend is still fine
 
-/** Title, a one-line status (freshness, coverage, run), and any page-level notice. */
-export default function Hero ({ summary, error, midrun, now = Date.now() }) {
+/** "Fri, Nov 13, 11:44 AM" in the viewer's time zone. */
+const stamp = d =>
+  `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
+
+/**
+ * Title, a one-line status (freshness, last-price upload, coverage, run), and any
+ * page-level notice. `lastPriceAt` is when the LastPrice database was last uploaded
+ * (/api/last-price), the prices behind the Last column on Tomorrow.
+ */
+export default function Hero ({ summary, error, midrun, lastPriceAt = null, now = Date.now() }) {
   const pub = summary?.publishedAt ? new Date(summary.publishedAt) : null
+  const lp = lastPriceAt ? new Date(lastPriceAt) : null
   const ageDays = pub ? (now - pub.getTime()) / 864e5 : null
   const stale = ageDays != null && ageDays > STALE_AFTER_DAYS
   const o = summary?.overall
@@ -16,8 +25,9 @@ export default function Hero ({ summary, error, midrun, now = Date.now() }) {
       {summary && (
         <div className="status">
           <span className={`fresh${stale ? ' stale' : ''}`} title={pub ? `Published ${pub.toLocaleString()}` : undefined}>
-            {pub ? `Published ${pub.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, ${pub.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}` : 'Published: unknown'}
+            {pub ? `Published ${stamp(pub)}` : 'Published: unknown'}
           </span>
+          {lp && <span className="last-price" title={`Last prices uploaded ${lp.toLocaleString()}`}>Last price updated {stamp(lp)}</span>}
           <span>{o.n.toLocaleString()} graded next-session predictions</span>
           <span>{summary.nTickers} large-cap names</span>
           <span>{dateYear(summary.range.start)} → {dateYear(summary.range.end)}</span>
