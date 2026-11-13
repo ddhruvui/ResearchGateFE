@@ -339,6 +339,35 @@ describe('tables', () => {
     expect(t.queryByText(/Last prices unavailable/)).not.toBeInTheDocument()
   })
 
+  it('re-reads the last prices every 10 minutes without a reload (T18)', async () => {
+    // Fake the interval too; time still runs so waitFor's own polling keeps working.
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'], shouldAdvanceTime: true })
+    vi.setSystemTime(new Date('2026-11-09T18:00:00Z'))
+    const { api } = await setup()
+    const t = within(section('tomorrow'))
+    expect(t.getByText('455.50')).toBeInTheDocument()
+    const reads = () => api.calls.filter(c => c === '/api/last-price').length
+    expect(reads()).toBe(1)
+
+    // A failed refresh keeps what is on screen.
+    api.routes['/api/last-price'] = () => ({ status: 500, body: { error: 'Atlas unreachable' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(10 * 60_000) })
+    expect(reads()).toBe(2)
+    expect(t.getByText('455.50')).toBeInTheDocument()
+    expect(t.queryByText(/Last prices unavailable/)).not.toBeInTheDocument()
+
+    // The next tick picks up the new upload: new price, new stamp on the top line.
+    api.routes['/api/last-price'] = () => ({ status: 200, body: {
+      db: 'LastPrice', uploadedAt: '2026-11-09T17:40:00.000Z',
+      prices: { AMD: 460.0, AAPL: 340.0, MSFT: 531.25 },
+    } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(10 * 60_000) })
+    expect(await t.findByText('460.00')).toBeInTheDocument()
+    expect(t.queryByText('455.50')).not.toBeInTheDocument()
+    expect(reads()).toBe(3)
+    expect(within(document.querySelector('.hero')).getByText(/^Last price updated .*12:40/)).toBeInTheDocument()
+  })
+
   it('follows the stop level and loads a stock chart once (T19)', async () => {
     const { api, user } = await setup()
     const s = within(section('stop-loss'))

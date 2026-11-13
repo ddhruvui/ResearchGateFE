@@ -182,7 +182,8 @@ export default function NextSession ({ data, loading, midrun = false, last = nul
           run makes the official prediction from the real close.</p>}
         {!live && hasLast && <p><strong>Last</strong> is the latest trade Yahoo reported when prices were
           last uploaded: every 10 minutes from Sunday 8 pm to Friday 8 pm New York time, pre-market and
-          after-hours included. Colour is the move against the {baseDate ? dateShort(baseDate) : 'official'} close;
+          after-hours included. This page re-reads them every 10 minutes, so there is no need to
+          reload. Colour is the move against the {baseDate ? dateShort(baseDate) : 'official'} close;
           hover a price for both. Press <strong>Get live price</strong> for EODHD&rsquo;s tape right now.</p>}
         {live && <p><strong>Live</strong> is the last trade EODHD reported at the moment you asked, taken
           from its real-time socket where a print arrived and from the REST snapshot otherwise (hover any

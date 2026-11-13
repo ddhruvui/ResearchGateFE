@@ -11,6 +11,8 @@ import StopLoss, { stopKeys } from './components/StopLoss.jsx'
 import Ranges from './components/Ranges.jsx'
 import { ByYear, LiveRecord, Returns, Scorecard } from './components/Sections.jsx'
 
+const LAST_PRICE_REFRESH_MS = 10 * 60_000
+
 /**
  * The dashboard. One page, answer first: tomorrow's call, the scorecard, then the
  * detail. The app bar and section bar stay pinned; each section loads and fails on
@@ -44,8 +46,9 @@ export default function App () {
   const ranges = useResource('/api/ranges')
   // Every ticker's last uploaded price, for the price column on "Tomorrow". Not tied to
   // a database or run, so Midrun shows the same prices. Optional: without it the
-  // column simply waits for "Get live price".
-  const lastPrice = useResource('/api/last-price')
+  // column simply waits for "Get live price". Re-read every 10 minutes, the upload's
+  // own cadence, so the column keeps up without a reload.
+  const lastPrice = useResource('/api/last-price', { refreshMs: LAST_PRICE_REFRESH_MS })
 
   const stops = stopKeys(strategy.data)
   const stop = stops.includes(stopPick) ? stopPick : (stops[1] || stops[0] || null)

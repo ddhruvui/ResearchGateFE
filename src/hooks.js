@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { j } from './api.js'
+import { fresh, j } from './api.js'
 
 /**
  * One API read. `path` null means "don't fetch". A response that arrives after the
  * path has changed is dropped, so quick switches (cost, Midrun) never show a stale
  * answer. With `keep`, the previous data stays on screen while the next loads.
+ *
+ * With `refreshMs`, the read repeats quietly on that interval: no loading state, and
+ * the answer replaces what is on screen only when it arrives. A failed refresh keeps
+ * the last good answer and the next tick tries again. Coming back to a hidden tab
+ * refreshes at once if a tick is overdue, since browsers slow timers in the background.
  */
-export function useResource (path, { keep = false } = {}) {
+export function useResource (path, { keep = false, refreshMs = 0 } = {}) {
   const [state, setState] = useState({ data: null, error: null, loading: !!path })
   const [attempt, setAttempt] = useState(0)
 
@@ -19,6 +24,28 @@ export function useResource (path, { keep = false } = {}) {
       .catch(e => live && setState({ data: null, error: e.message, loading: false }))
     return () => { live = false }
   }, [path, attempt, keep])
+
+  useEffect(() => {
+    if (!path || !(refreshMs > 0)) return
+    let live = true
+    let last = Date.now()
+    const tick = () => {
+      last = Date.now()
+      fresh(path)
+        .then(data => live && setState({ data, error: null, loading: false }))
+        .catch(() => { /* keep what is on screen; the next tick tries again */ })
+    }
+    const id = setInterval(tick, refreshMs)
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && Date.now() - last >= refreshMs) tick()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      live = false
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [path, refreshMs, attempt])
 
   const retry = useCallback(() => setAttempt(a => a + 1), [])
   return { ...state, retry }
